@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poemes | Abir Al Horof</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Playfair+Display:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="poems">
+  <div class="site-shell">
+    <header class="header">
+      <nav class="navbar container">
+        <a class="brand" href="index.html" aria-label="Abir Al Horof Poetry Club">
+          <div class="logo-frame">
+            <canvas id="logoCanvas" class="logo-canvas" width="132" height="132" aria-hidden="true"></canvas>
+            <img id="logoSource" src="src/image/logo.png" alt="Logo Abir Al Horof" hidden>
+          </div>
+          <div class="brand-copy">
+            <span class="brand-title" data-i18n="brand.name">Abir Al Horof</span>
+            <span class="brand-subtitle" data-i18n="brand.tagline">Club de poesie et de musique</span>
+          </div>
+        </a>
+        <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">
+          <span></span>
+          <span></span>
+        </button>
+        <div class="nav-panel">
+          <div class="nav-links">
+            <a href="index.html" data-nav="home" data-i18n="nav.home">Accueil</a>
+            <a href="about.html" data-nav="about" data-i18n="nav.about">A propos</a>
+            <a href="activities.html" data-nav="activities" data-i18n="nav.activities">Activites</a>
+            <a href="soirees.html" data-nav="soirees" data-i18n="nav.soirees">Soirees</a>
+            <a href="poems.html" data-nav="poems" data-i18n="nav.poems">Poemes</a>
+            <a href="contact.html" data-nav="contact" data-i18n="nav.contact">Contact</a>
+          </div>
+          <button class="lang-switch" type="button" aria-label="Changer la langue">
+            <span data-lang-current>FR</span>
+            <span class="lang-divider">/</span>
+            <span data-lang-target>AR</span>
+          </button>
+        </div>
+      </nav>
+    </header>
+    <main class="section">
+      <div class="container page-intro reveal">
+        <p class="eyebrow" data-i18n="poems.eyebrow">Bibliotheque poetique</p>
+        <h1 data-i18n="poems.title">Une selection de textes a lire avec lenteur et recueillement.</h1>
+        <p data-i18n="poems.text">Explorez des poemes presentes dans une mise en page epuree qui laisse toute la place a la musicalite des vers.</p>
+      </div>
+      <div class="container poem-links">
+        <a class="poem-link reveal" href="poem1.html" data-i18n="poems.link1">قصيدة التوسل</a>
+        <a class="poem-link reveal reveal-delay" href="poem2.html" data-i18n="poems.link2">قصيدة الحجة</a>
+      </div>
+    </main>
+    <footer class="footer">
+      <div class="container footer-content">
+        <p data-i18n="footer.copy">Abir Al Horof Poetry Club. La poesie comme souffle et partage.</p>
+        <div class="footer-links">
+          <a class="social-link" href="mailto:abiralhorof@gmail.com">
+            <svg class="social-icon-mail" viewBox="0 0 24 24" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3.5 6.5H20.5V17.5H3.5V6.5Z" stroke="currentColor" stroke-width="1.8" rx="2"/>
+              <path d="M4.5 8L12 13.5L19.5 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>abiralhorof@gmail.com</span>
+          </a>
+          <a class="social-link" href="https://wa.me/212661962678" target="_blank" rel="noreferrer">
+            <img src="src/image/WhatsApp_Logo.webp" alt="WhatsApp">
+            <span>WhatsApp</span>
+          </a>
+          <a class="social-link" href="https://www.instagram.com/abir_al_horof/" target="_blank" rel="noreferrer">
+            <img src="src/image/Instagram_logo.webp" alt="Instagram">
+            <span>Instagram</span>
+          </a>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

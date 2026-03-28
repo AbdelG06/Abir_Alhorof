@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activites | Abir Al Horof</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Playfair+Display:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="activities">
+  <div class="site-shell">
+    <header class="header">
+      <nav class="navbar container">
+        <a class="brand" href="index.html" aria-label="Abir Al Horof Poetry Club">
+          <div class="logo-frame">
+            <canvas id="logoCanvas" class="logo-canvas" width="132" height="132" aria-hidden="true"></canvas>
+            <img id="logoSource" src="src/image/logo.png" alt="Logo Abir Al Horof" hidden>
+          </div>
+          <div class="brand-copy">
+            <span class="brand-title" data-i18n="brand.name">Abir Al Horof</span>
+            <span class="brand-subtitle" data-i18n="brand.tagline">Club de poesie et de musique</span>
+          </div>
+        </a>
+        <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">
+          <span></span>
+          <span></span>
+        </button>
+        <div class="nav-panel">
+          <div class="nav-links">
+            <a href="index.html" data-nav="home" data-i18n="nav.home">Accueil</a>
+            <a href="about.html" data-nav="about" data-i18n="nav.about">A propos</a>
+            <a href="activities.html" data-nav="activities" data-i18n="nav.activities">Activites</a>
+            <a href="soirees.html" data-nav="soirees" data-i18n="nav.soirees">Soirees</a>
+            <a href="poems.html" data-nav="poems" data-i18n="nav.poems">Poemes</a>
+            <a href="contact.html" data-nav="contact" data-i18n="nav.contact">Contact</a>
+          </div>
+          <button class="lang-switch" type="button" aria-label="Changer la langue">
+            <span data-lang-current>FR</span>
+            <span class="lang-divider">/</span>
+            <span data-lang-target>AR</span>
+          </button>
+        </div>
+      </nav>
+    </header>
+    <main class="section">
+      <div class="container page-intro reveal">
+        <p class="eyebrow" data-i18n="activities.eyebrow">Activites poetiques</p>
+        <h1 data-i18n="activities.title">Des ateliers, des rencontres et des instants de creation partages.</h1>
+        <p data-i18n="activities.text">Le club propose un parcours sensible autour de l'ecriture, de la diction et de l'experience poetique vivante.</p>
+      </div>
+      <div class="container cards-grid">
+        <article class="feature-card reveal">
+          <p class="card-label" data-i18n="activities.card1.label">Lecture</p>
+          <h2 data-i18n="activities.card1.title">Cercles de lecture et d'interpretation.</h2>
+          <p data-i18n="activities.card1.text">Des moments pour lire, ressentir et approfondir la musicalite des textes.</p>
+        </article>
+        <article class="feature-card reveal reveal-delay">
+          <p class="card-label" data-i18n="activities.card2.label">Ecriture</p>
+          <h2 data-i18n="activities.card2.title">Ateliers poetiques payants.</h2>
+          <p data-i18n="activities.card2.text">Un accompagnement structure pour ecrire, reviser et affiner sa voix poetique.</p>
+          <span class="status-pill" data-i18n="common.soon">Bientot / قريباً</span>
+        </article>
+        <article class="feature-card reveal reveal-delay-2">
+          <p class="card-label" data-i18n="activities.card3.label">Scene</p>
+          <h2 data-i18n="activities.card3.title">Rencontres artistiques et performances.</h2>
+          <p data-i18n="activities.card3.text">Des formats intimistes pour faire vivre la poesie a travers la voix et la presence.</p>
+        </article>
+      </div>
+    </main>
+    <footer class="footer">
+      <div class="container footer-content">
+        <p data-i18n="footer.copy">Abir Al Horof Poetry Club. La poesie comme souffle et partage.</p>
+        <div class="footer-links">
+          <a class="social-link" href="mailto:abiralhorof@gmail.com">
+            <svg class="social-icon-mail" viewBox="0 0 24 24" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3.5 6.5H20.5V17.5H3.5V6.5Z" stroke="currentColor" stroke-width="1.8" rx="2"/>
+              <path d="M4.5 8L12 13.5L19.5 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>abiralhorof@gmail.com</span>
+          </a>
+          <a class="social-link" href="https://wa.me/212661962678" target="_blank" rel="noreferrer">
+            <img src="src/image/WhatsApp_Logo.webp" alt="WhatsApp">
+            <span>WhatsApp</span>
+          </a>
+          <a class="social-link" href="https://www.instagram.com/abir_al_horof/" target="_blank" rel="noreferrer">
+            <img src="src/image/Instagram_logo.webp" alt="Instagram">
+            <span>Instagram</span>
+          </a>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
