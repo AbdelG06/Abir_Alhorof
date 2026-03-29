@@ -98,7 +98,7 @@ const translations = {
         submit: "Envoyer"
       },
       quotes: {
-        button: "Inspire-moi ✨",
+        button: "Extrait poétique ✨",
         label: "Inspiration poetique"
       }
     },
@@ -248,7 +248,7 @@ const translations = {
         submit: "إرسال"
       },
       quotes: {
-        button: "ألهمني ✨",
+        button: "مقتطف شعري ✨",
         label: "إلهام شعري"
       }
     },
