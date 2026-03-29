@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body data-page="home">
+  <canvas class="particles-layer" id="particlesLayer" aria-hidden="true"></canvas>
   <div class="site-shell">
     <header class="header">
       <nav class="navbar container">
@@ -49,11 +50,11 @@
         <div class="container hero-grid">
           <div class="hero-copy reveal">
             <p class="eyebrow" data-i18n="home.eyebrow">Une maison pour les mots, la musique et l'ame.</p>
-            <h1 data-i18n="home.title">Quand la poesie devient rencontre, lumiere et presence.</h1>
+            <h1 class="typing-text" data-typing data-i18n="home.title">Quand la poesie devient rencontre, lumiere et presence.</h1>
             <p class="hero-text" data-i18n="home.text">Abir Al Horof est un espace artistique ou la sensibilite litteraire, la voix et la beaute du verbe se rencontrent dans une atmosphere elegante et inspirante.</p>
             <div class="hero-actions">
               <a class="button button-primary" href="about.html" data-i18n="home.ctaPrimary">Decouvrir le club</a>
-              <a class="button button-secondary" href="poems.html" data-i18n="home.ctaSecondary">Lire les poemes</a>
+              <a class="button button-secondary" href="join.html" data-i18n="home.ctaSecondary">Rejoindre le club</a>
             </div>
           </div>
           <div class="hero-card reveal reveal-delay">
@@ -84,10 +85,62 @@
           </article>
         </div>
       </section>
+      <section class="section">
+        <div class="container section-heading reveal">
+          <p class="eyebrow" data-i18n="home.events.eyebrow">Calendrier poetique</p>
+          <h2 data-i18n="home.events.title">Les prochains rendez-vous du club.</h2>
+          <p data-i18n="home.events.text">Une vue rapide sur la prochaine soiree et le prochain atelier.</p>
+        </div>
+        <div class="container cards-grid event-preview-grid">
+          <article class="event-card reveal">
+            <p class="card-label" data-i18n="home.events.nextSoiree.label">Prochaine soiree</p>
+            <h2 data-i18n="home.events.nextSoiree.title">Bientot / قريباً</h2>
+            <p data-i18n="home.events.nextSoiree.text">La prochaine soiree poetique sera annoncee tres prochainement avec son programme complet.</p>
+            <span class="status-pill" data-i18n="common.comingSoon">Bientot / قريباً</span>
+          </article>
+          <article class="event-card reveal reveal-delay">
+            <p class="card-label" data-i18n="home.events.nextWorkshop.label">Prochain atelier</p>
+            <h2 data-i18n="home.events.nextWorkshop.title">Bientot / قريباً</h2>
+            <p data-i18n="home.events.nextWorkshop.text">Les inscriptions pour le prochain atelier d'ecriture ouvriront des que les dates seront finalisees.</p>
+            <span class="status-pill" data-i18n="common.comingSoon">Bientot / قريباً</span>
+          </article>
+        </div>
+      </section>
+      <section class="section">
+        <div class="container split-grid">
+          <article class="feature-card reveal ticket-card">
+            <p class="card-label" data-i18n="home.ticket.label">Billetterie</p>
+            <h2 data-i18n="home.ticket.title">Reserve ta place pour les prochaines soirees.</h2>
+            <p data-i18n="home.ticket.text">Une interface de billetterie elegante est deja prete pour accueillir les futures reservations du club.</p>
+            <button class="button ticket-notice-button disabled-button" type="button" disabled data-i18n="home.ticket.notice">Sera afficher prochainement</button>
+          </article>
+          <article class="event-card reveal reveal-delay ticket-panel">
+            <h2 data-i18n="home.ticket.cardTitle">Soiree poetique premium</h2>
+            <p data-i18n="home.ticket.cardText">Acces a la soiree, au programme et aux moments de partage autour de la poesie.</p>
+            <button class="button button-primary disabled-button" type="button" disabled data-i18n="common.buySoon">Soon</button>
+          </article>
+        </div>
+      </section>
+      <section class="section join-section" id="join-club">
+        <div class="container join-banner reveal">
+          <article class="feature-card join-cta-card">
+            <p class="card-label" data-i18n="home.join.label">Rejoindre عبير الحروف</p>
+            <h2 data-i18n="home.join.title">Entrez dans le cercle des voix, des ateliers et des futures rencontres.</h2>
+            <p data-i18n="home.join.text">Laissez-nous votre message pour recevoir les annonces du club et les informations d'inscription.</p>
+            <div class="join-cta-actions">
+              <a class="button button-primary" href="join.html" data-i18n="home.join.cta">Je souhaite rejoindre</a>
+              <a class="button button-secondary" href="contact.html" data-i18n="home.join.secondary">Nous contacter</a>
+            </div>
+          </article>
+        </div>
+      </section>
     </main>
     <footer class="footer">
       <div class="container footer-content">
-        <p data-i18n="footer.copy">Abir Al Horof Poetry Club. La poesie comme souffle et partage.</p>
+        <div class="footer-copy-group">
+          <p data-i18n="footer.copy">Abir Al Horof Club de Poesie.</p>
+          <a class="footer-credit" href="https://www.instagram.com/abdelkrimgarwaoui_off/" target="_blank" rel="noreferrer">by abdel G</a>
+        </div>
         <div class="footer-links">
           <a class="social-link" href="mailto:abiralhorof@gmail.com">
             <svg class="social-icon-mail" viewBox="0 0 24 24" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -104,9 +157,25 @@
             <img src="src/image/Instagram_logo.webp" alt="Instagram">
             <span>Instagram</span>
           </a>
+          <a class="social-link" href="https://www.facebook.com/share/1CDxAFC4Yf/?mibextid=wwXIfr" target="_blank" rel="noreferrer">
+            <img src="src/image/Facebook_logo.svg" alt="Facebook">
+            <span>Facebook</span>
+          </a>
         </div>
       </div>
     </footer>
+  </div>
+  <button class="quote-fab" id="quoteFab" type="button">
+    <span data-i18n="home.quotes.button">Inspire-moi ✨</span>
+  </button>
+  <div class="quote-modal" id="quoteModal" hidden>
+    <div class="quote-modal-backdrop" data-close-quote></div>
+    <div class="quote-modal-card" role="dialog" aria-modal="true" aria-labelledby="quoteModalTitle">
+      <button class="quote-close" type="button" aria-label="Fermer" data-close-quote>&times;</button>
+      <p class="eyebrow" id="quoteModalTitle" data-i18n="home.quotes.label">Inspiration poetique</p>
+      <blockquote class="quote-modal-text" id="quoteModalText"></blockquote>
+      <p class="quote-modal-author" id="quoteModalAuthor"></p>
+    </div>
   </div>
   <script src="script.js"></script>
 </body>

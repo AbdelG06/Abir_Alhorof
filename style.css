@@ -31,6 +31,10 @@ body {
   overflow-x: hidden;
 }
 
+body.is-loading {
+  overflow: hidden;
+}
+
 body::before,
 body::after {
   content: "";
@@ -66,6 +70,8 @@ img, canvas { display: block; max-width: 100%; }
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 1;
 }
 
 body.gate-open .site-shell {
@@ -229,7 +235,9 @@ body.lang-ar .poem-title {
 .founders-grid,
 .contact-grid,
 .cards-grid,
-.soiree-layout {
+.soiree-layout,
+.gallery-grid,
+.join-grid {
   display: grid;
   gap: 1.5rem;
 }
@@ -241,16 +249,23 @@ body.lang-ar .poem-title {
 
 .hero-copy h1,
 .page-intro h1,
+.section-heading h2,
 .feature-card h2,
-.event-card h2 {
+.event-card h2,
+.gallery-card h3,
+.quote-modal-text,
+.form-heading h3 {
   font-family: "Playfair Display", serif;
   font-size: clamp(2.4rem, 5vw, 4.8rem);
   line-height: 1.05;
   margin: 0;
 }
 
-.page-intro h1 { font-size: clamp(2.2rem, 4vw, 4rem); }
+.page-intro h1,
+.section-heading h2 { font-size: clamp(2.2rem, 4vw, 4rem); }
 .feature-card h2, .event-card h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); }
+.gallery-card h3,
+.form-heading h3 { font-size: clamp(1.35rem, 2.5vw, 2rem); }
 
 .eyebrow,
 .card-label,
@@ -269,6 +284,7 @@ body.lang-ar .contact-label {
 
 .hero-text,
 .page-intro p,
+.section-heading p,
 .feature-card p,
 .event-card p,
 .founder-card p,
@@ -312,6 +328,23 @@ body.lang-ar .contact-label {
   background: rgba(255, 255, 255, 0.02);
 }
 
+.ticket-notice-button {
+  width: fit-content;
+  margin-top: 0.6rem;
+  color: var(--bg);
+  border: 1px solid rgba(240, 211, 159, 0.3);
+  background: linear-gradient(135deg, var(--gold-strong), var(--gold));
+  box-shadow: 0 16px 32px rgba(216, 189, 132, 0.2);
+  opacity: 1;
+}
+
+.ticket-notice-button:disabled {
+  color: var(--bg);
+  background: linear-gradient(135deg, var(--gold-strong), var(--gold));
+  border-color: rgba(240, 211, 159, 0.3);
+}
+
+.button:disabled,
 .disabled-button { opacity: 0.9; cursor: not-allowed; }
 
 .hero-card,
@@ -320,6 +353,7 @@ body.lang-ar .contact-label {
 .person-card,
 .event-card,
 .contact-card,
+.gallery-card,
 .poem-link,
 .poem-shell {
   position: relative;
@@ -336,6 +370,7 @@ body.lang-ar .contact-label {
 .person-card,
 .event-card,
 .contact-card,
+.gallery-card,
 .poem-link {
   padding: 1.8rem;
 }
@@ -346,6 +381,7 @@ body.lang-ar .contact-label {
 .person-card::before,
 .event-card::before,
 .contact-card::before,
+.gallery-card::before,
 .poem-link::before,
 .poem-shell::before {
   content: "";
@@ -419,23 +455,435 @@ body.lang-ar .ornament {
 
 .cards-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .contact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.gallery-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
 .contact-card,
-.poem-link {
+.poem-link,
+.gallery-card,
+.gallery-chip,
+.quote-fab,
+.quote-modal-card,
+.ticket-panel {
   transition: transform var(--transition), border-color var(--transition), background var(--transition);
 }
 
 .contact-card:hover,
-.poem-link:hover {
+.poem-link:hover,
+.gallery-card:hover,
+.ticket-panel:hover {
   transform: translateY(-4px);
   border-color: rgba(216, 189, 132, 0.4);
   background: rgba(216, 189, 132, 0.08);
+}
+
+.contact-card-centered {
+  grid-column: 1 / -1;
+  width: min(100%, 24rem);
+  justify-self: center;
 }
 
 .poem-links {
   display: grid;
   gap: 1rem;
   max-width: 760px;
+}
+
+.particles-layer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.45;
+}
+
+.section-heading {
+  display: grid;
+  gap: 0.8rem;
+  margin-bottom: 1.75rem;
+}
+
+.typing-text {
+  min-height: 2.3em;
+}
+
+.typing-text.is-typing::after {
+  content: "";
+  display: inline-block;
+  width: 1px;
+  height: 0.9em;
+  margin-inline-start: 0.22rem;
+  background: var(--gold-strong);
+  vertical-align: baseline;
+  animation: blink 0.8s steps(1) infinite;
+}
+
+.event-preview-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.gallery-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+
+.gallery-chip {
+  min-height: 2.9rem;
+  padding: 0.7rem 1.1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.gallery-chip:hover,
+.gallery-chip.is-active {
+  color: var(--bg);
+  background: linear-gradient(135deg, var(--gold), var(--gold-strong));
+  border-color: transparent;
+}
+
+.gallery-card {
+  display: grid;
+  gap: 1rem;
+  min-height: 290px;
+  align-content: start;
+}
+
+.gallery-card strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 2.2rem;
+  padding: 0.25rem 0.85rem;
+  border-radius: var(--radius-sm);
+  background: rgba(216, 189, 132, 0.1);
+  color: var(--gold-strong);
+  border: 1px solid rgba(216, 189, 132, 0.18);
+}
+
+.gallery-card.is-hidden {
+  display: none;
+}
+
+.gallery-tag,
+.ticket-price {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 2.3rem;
+  padding: 0.3rem 0.9rem;
+  border-radius: var(--radius-sm);
+  color: var(--gold-strong);
+  background: rgba(216, 189, 132, 0.08);
+  border: 1px solid var(--line);
+}
+
+.ticket-card,
+.ticket-panel {
+  min-height: 100%;
+}
+
+.ticket-panel {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+}
+
+.join-section {
+  padding-bottom: 5.5rem;
+}
+
+.join-grid {
+  align-items: start;
+}
+
+.join-banner {
+  max-width: 880px;
+}
+
+.join-cta-card {
+  display: grid;
+  gap: 1.1rem;
+  text-align: center;
+}
+
+.join-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.85rem;
+  margin-top: 0.4rem;
+}
+
+.join-form-shell {
+  max-width: 980px;
+}
+
+.join-page-intro {
+  max-width: 760px;
+  margin-bottom: 1.5rem;
+}
+
+.contact-join-action {
+  margin-top: 1.75rem;
+}
+
+.join-form {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.15rem;
+  align-items: start;
+}
+
+.join-form-intro {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+  max-width: 40rem;
+  position: relative;
+  z-index: 1;
+}
+
+.join-form-kicker {
+  margin: 0;
+  color: rgba(245, 237, 220, 0.66);
+  font-size: 0.9rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.join-form-intro h2 {
+  margin: 0;
+  font-family: "Playfair Display", serif;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1.02;
+}
+
+body.lang-ar .join-form-intro h2 {
+  font-family: "Amiri", serif;
+}
+
+.join-form-intro p:last-child {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.04rem;
+  line-height: 1.85;
+}
+
+.form-field {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.form-field-wide,
+.join-form-actions {
+  grid-column: 1 / -1;
+}
+
+.form-field span {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.98rem;
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  border: 1px solid rgba(216, 189, 132, 0.16);
+  border-radius: 1.25rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025));
+  color: var(--text);
+  font: inherit;
+  padding: 1rem 1.1rem;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition), transform var(--transition);
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+  color: rgba(245, 237, 220, 0.4);
+}
+
+.form-field textarea {
+  resize: vertical;
+  min-height: 180px;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  border-color: rgba(216, 189, 132, 0.45);
+  box-shadow: 0 0 0 3px rgba(216, 189, 132, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-1px);
+}
+
+.form-field.is-invalid input,
+.form-field.is-invalid textarea {
+  border-color: rgba(255, 120, 120, 0.7);
+  box-shadow: 0 0 0 3px rgba(255, 120, 120, 0.08);
+}
+
+.form-feedback {
+  min-height: 1.4rem;
+  margin: 0;
+  color: var(--gold-strong);
+  align-self: center;
+}
+
+.join-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.25rem;
+}
+
+.quote-fab {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 45;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border: 1px solid rgba(216, 189, 132, 0.24);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.28rem;
+  background: linear-gradient(135deg, rgba(37, 30, 21, 0.96), rgba(20, 18, 14, 0.98));
+  color: var(--text);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(216, 189, 132, 0.08);
+  cursor: pointer;
+  overflow: hidden;
+  animation: quoteFloat 3.8s ease-in-out infinite;
+}
+
+.quote-fab::before {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  background: radial-gradient(circle, rgba(240, 211, 159, 0.28) 0%, rgba(240, 211, 159, 0) 62%);
+  opacity: 0.65;
+  transform: translate3d(-18%, 10%, 0);
+  animation: quoteGlow 4.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.quote-fab span {
+  position: relative;
+  z-index: 1;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.quote-fab:hover {
+  animation-play-state: paused;
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 28px 52px rgba(0, 0, 0, 0.34), 0 0 24px rgba(216, 189, 132, 0.18);
+}
+
+.quote-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.quote-modal[hidden] {
+  display: none;
+}
+
+.quote-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 5, 4, 0.6);
+  backdrop-filter: blur(8px);
+}
+
+.quote-modal-card {
+  position: relative;
+  z-index: 1;
+  width: min(680px, 100%);
+  padding: 2rem;
+  border-radius: 2rem;
+  border: 1px solid rgba(216, 189, 132, 0.22);
+  background: linear-gradient(180deg, rgba(23, 20, 15, 0.96), rgba(13, 11, 9, 0.98));
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.42);
+  animation: modalIn 260ms ease;
+}
+
+.quote-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.quote-modal-text {
+  margin: 1rem 0;
+  font-size: clamp(1.5rem, 2.8vw, 2.3rem);
+  line-height: 1.45;
+}
+
+.quote-modal-author {
+  margin: 0 0 1.4rem;
+  color: var(--gold-strong);
+}
+
+.site-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at center, rgba(216, 189, 132, 0.14), transparent 35%),
+    rgba(8, 8, 7, 0.96);
+  transition: opacity 520ms ease, visibility 520ms ease;
+}
+
+.site-loader.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-mark {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  text-align: center;
+  animation: loaderPulse 1.1s ease-in-out infinite alternate;
+}
+
+.loader-mark img {
+  width: min(150px, 38vw);
+  height: auto;
+  filter: drop-shadow(0 16px 36px rgba(216, 189, 132, 0.16));
+}
+
+.loader-mark strong {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  letter-spacing: 0.08em;
 }
 
 .poem-link {
@@ -445,21 +893,35 @@ body.lang-ar .ornament {
 }
 
 .poem-page {
-  display: flex;
-  align-items: center;
+  display: block;
+  padding: 1.5rem 0 2rem;
 }
 
 .poem-shell {
-  max-width: 780px;
+  width: min(100%, 760px);
+  max-width: 760px;
   margin: 0 auto;
-  padding: 3rem 2rem;
+  padding: 1.6rem 1.2rem;
   text-align: center;
   background: rgba(20, 17, 13, 0.88);
 }
 
+.poem-index-page .page-intro {
+  margin-bottom: 1.25rem;
+}
+
+.poem-page .poem-shell,
+.poem-page .poem-body {
+  direction: rtl;
+}
+
+.poem-page .lang-switch {
+  display: none;
+}
+
 .poem-title {
-  margin: 0 0 1.5rem;
-  font-size: clamp(2.3rem, 4vw, 3.7rem);
+  margin: 0 0 0.7rem;
+  font-size: clamp(1.7rem, 2.4vw, 2.5rem);
 }
 
 .poem-credit,
@@ -471,31 +933,42 @@ body.lang-ar .ornament {
 }
 
 .poem-credit {
-  margin: -0.6rem 0 2rem;
-  font-size: 1.1rem;
+  margin: 0 0 1.2rem;
+  font-size: 0.92rem;
+  opacity: 0.9;
 }
 
 .poem-subtitle {
-  margin: 2.5rem 0 1rem;
-  font-size: 1.4rem;
+  margin: 1.8rem 0 0.75rem;
+  font-size: 1.05rem;
+  text-align: center;
 }
 
 .poem-refrain {
-  margin: 2rem 0 1rem;
-  font-size: 1.2rem;
+  margin: 1.3rem 0 0.65rem;
+  font-size: 0.98rem;
+  text-align: center;
 }
 
 .poem-body {
   position: relative;
   z-index: 1;
   font-family: "Amiri", serif;
-  font-size: clamp(1.7rem, 3vw, 2.2rem);
-  line-height: 2.1;
+  font-size: clamp(1.05rem, 1.45vw, 1.28rem);
+  line-height: 1.65;
   color: #fbf4e6;
+  text-align: right;
+  unicode-bidi: plaintext;
+}
+
+.poem-section {
+  display: grid;
+  gap: 0.08rem;
 }
 
 .poem-section p {
   margin: 0;
+  padding-inline: 0;
 }
 
 .footer {
@@ -510,6 +983,17 @@ body.lang-ar .ornament {
   gap: 1rem;
   padding-top: 1rem;
   border-top: 1px solid rgba(214, 181, 121, 0.12);
+}
+
+.footer-copy-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.footer-copy-group p {
+  margin: 0;
 }
 
 .footer-links {
@@ -529,6 +1013,21 @@ body.lang-ar .ornament {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
+}
+
+.footer-credit {
+  display: inline-flex;
+  align-items: center;
+  color: rgba(240, 211, 159, 0.82);
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: color var(--transition), opacity var(--transition);
+}
+
+.footer-credit:hover {
+  color: var(--gold-strong);
+  opacity: 1;
 }
 
 .social-link img {
@@ -674,11 +1173,22 @@ body.lang-ar .ornament {
 .reveal {
   opacity: 0;
   transform: translateY(28px);
-  animation: rise 0.9s ease forwards;
+  transition: opacity 0.9s ease, transform 0.9s ease;
 }
 
-.reveal-delay { animation-delay: 0.16s; }
-.reveal-delay-2 { animation-delay: 0.28s; }
+.poem-page .reveal,
+body[data-page="poems"] .reveal {
+  opacity: 1;
+  transform: none;
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay { transition-delay: 0.16s; }
+.reveal-delay-2 { transition-delay: 0.28s; }
 
 @keyframes rise {
   to {
@@ -687,13 +1197,39 @@ body.lang-ar .ornament {
   }
 }
 
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@keyframes loaderPulse {
+  from { transform: translateY(0) scale(0.985); opacity: 0.86; }
+  to { transform: translateY(-4px) scale(1); opacity: 1; }
+}
+
+@keyframes modalIn {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes quoteFloat {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -10px, 0); }
+}
+
+@keyframes quoteGlow {
+  0%, 100% { transform: translate3d(-18%, 10%, 0) scale(0.94); opacity: 0.42; }
+  50% { transform: translate3d(16%, -8%, 0) scale(1.08); opacity: 0.84; }
+}
+
 @media (max-width: 960px) {
   .hero-grid,
   .split-grid,
   .founders-grid,
   .soiree-layout,
   .cards-grid,
-  .contact-grid {
+  .contact-grid,
+  .gallery-grid,
+  .event-preview-grid {
     grid-template-columns: 1fr;
   }
 
@@ -738,16 +1274,54 @@ body.lang-ar .ornament {
   .hero-copy h1, .page-intro h1 { line-height: 1.16; }
 
   .hero-actions,
+  .join-cta-actions,
   .footer-content {
     flex-direction: column;
     align-items: flex-start;
   }
 
+  .footer-copy-group {
+    align-items: flex-start;
+  }
+
   .button,
   .contact-card,
-  .poem-link { width: 100%; }
+  .poem-link,
+  .quote-fab { width: 100%; }
+
+  .contact-card-centered {
+    width: 100%;
+  }
+
+  .join-form {
+    grid-template-columns: 1fr;
+  }
+
+  .join-form-actions {
+    align-items: stretch;
+  }
+
+  .join-form-actions .button {
+    width: 100%;
+  }
 
   .poem-shell { padding: 2.2rem 1.2rem; }
   .gate-card { padding: 1.5rem; border-radius: 1.4rem; }
   .gate-actions { grid-template-columns: 1fr; }
+  .quote-fab {
+    right: 1rem;
+    left: 1rem;
+    bottom: 1rem;
+  }
+  .quote-modal-card {
+    padding: 1.5rem;
+    border-radius: 1.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quote-fab,
+  .quote-fab::before {
+    animation: none;
+  }
 }

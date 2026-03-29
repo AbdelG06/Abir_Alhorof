@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Poemes | Abir Al Horof</title>
+  <title>Rejoindre | Abir Al Horof</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Playfair+Display:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body data-page="poems">
+<body data-page="join">
   <div class="site-shell">
     <header class="header">
       <nav class="navbar container">
@@ -44,15 +44,45 @@
         </div>
       </nav>
     </header>
-    <main class="poem-page poem-index-page">
-      <div class="container page-intro">
-        <p class="eyebrow" data-i18n="poems.eyebrow">Bibliotheque poetique</p>
-        <h1 data-i18n="poems.title">Une selection de textes a lire avec lenteur et recueillement.</h1>
-        <p data-i18n="poems.text">Explorez des poemes presentes dans une mise en page epuree qui laisse toute la place a la musicalite des vers.</p>
+    <main class="section">
+      <div class="container page-intro reveal join-page-intro">
+        <p class="eyebrow" data-i18n="home.join.formLabel">Formulaire</p>
+        <h1 data-i18n="home.join.formTitle">Rejoindre عبير الحروف</h1>
+        <p data-i18n="home.join.text">Laissez-nous votre message pour recevoir les annonces du club et les informations d'inscription.</p>
       </div>
-      <div class="container poem-links">
-        <a class="poem-link" href="poem1.html" data-i18n="poems.link1">قصيدة التوسل</a>
-        <a class="poem-link" href="poem2.html" data-i18n="poems.link2">قصيدة الحجة</a>
+      <div class="container join-form-shell">
+        <article class="contact-card reveal reveal-delay">
+          <div class="join-form-intro">
+            <p class="join-form-kicker" data-i18n="home.join.formLabel">Formulaire</p>
+            <h2 data-i18n="home.join.formTitle">Rejoindre عبير الحروف</h2>
+            <p data-i18n="home.join.text">Laissez-nous votre message pour recevoir les annonces du club et les informations d'inscription.</p>
+          </div>
+          <form
+            id="join-form"
+            class="join-form"
+            action="https://formspree.io/f/mgopalze"
+            method="POST"
+            novalidate
+          >
+            <label class="form-field">
+              <span data-i18n="home.join.name">Nom et prénom</span>
+              <input type="text" name="name" required data-field="name" autocomplete="name" data-i18n-placeholder="home.join.namePlaceholder" placeholder="Saisir nom et prénom">
+            </label>
+            <label class="form-field">
+              <span data-i18n="home.join.email">Email</span>
+              <input type="email" name="email" required data-field="email" autocomplete="email" data-i18n-placeholder="home.join.emailPlaceholder" placeholder="Saisir votre email">
+            </label>
+            <label class="form-field form-field-wide">
+              <span data-i18n="home.join.message">Message</span>
+              <textarea name="message" rows="6" required data-field="message" data-i18n-placeholder="home.join.messagePlaceholder" placeholder="Ecrire votre message"></textarea>
+            </label>
+            <input type="hidden" name="_subject" value="Nouvelle inscription Abir Al Horof">
+            <div class="join-form-actions">
+              <button class="button button-primary" type="submit" data-i18n="home.join.submit">Envoyer</button>
+              <p class="form-feedback" id="joinFormFeedback" aria-live="polite"></p>
+            </div>
+          </form>
+        </article>
       </div>
     </main>
     <footer class="footer">
