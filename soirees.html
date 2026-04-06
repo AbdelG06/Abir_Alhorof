@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr" dir="ltr">
 <head>
   <meta charset="UTF-8">
@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Playfair+Display:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="reservation.css">
 </head>
 <body data-page="soirees">
   <div class="site-shell">
@@ -45,17 +46,23 @@
       </nav>
     </header>
     <main class="section">
-      <div class="container soiree-layout">
-        <div class="page-intro reveal">
-          <p class="eyebrow" data-i18n="soirees.eyebrow">Soirees poetiques</p>
-          <h1 data-i18n="soirees.title">Des nuits ou la scene s'habille de voix, de lumiere et de silence habite.</h1>
-          <p data-i18n="soirees.text">Les soirees du club reunissent passionnes, artistes et amis de la parole autour de moments delicats et memorables.</p>
-          <button class="button button-primary disabled-button" type="button" disabled data-i18n="common.soon">Bientot / قريباً</button>
+      <div class="container soiree-layout soiree-layout-featured">
+        <div class="page-intro reveal reservation-copy-shell">
+          <p class="eyebrow" data-res-i18n="soiree.eyebrow">Soiree a venir</p>
+          <h1 data-res-i18n="soiree.title">Journee Therapie et Lecture : Se reconnecter a soi au coeur de la nature.</h1>
+          <p data-res-i18n="soiree.description">Une rencontre sensorielle et poetique animee par Madame Bouchera Safriiwi, Lamia Jam et Tiya, entre meditation, marche consciente et lecture partagee.</p>
+          <p class="soiree-highlight reveal reveal-delay" data-res-i18n="soiree.notice">Les places sont gratuites et limitees a une seule reservation par participant.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="reservation.html" data-res-i18n="soiree.cta">Reserver</a>
+          </div>
         </div>
-        <article class="event-card reveal reveal-delay">
-          <p class="card-label" data-i18n="soirees.card.label">Billetterie</p>
-          <h2 data-i18n="soirees.card.title">Les prochaines reservations ouvriront bientot.</h2>
-          <p data-i18n="soirees.card.text">Retrouvez ici les details des nuits poetiques, les programmes et les liens de reservation des que disponibles.</p>
+        <article class="event-card soiree-poster-card reveal reveal-delay">
+          <p class="card-label" data-res-i18n="soiree.posterLabel">Affiche</p>
+          <img class="soiree-poster" src="src/image/affiche.jpeg" alt="Affiche de la soiree Abir Al Horof">
+          <div class="poster-card-copy">
+            <h2 data-res-i18n="soiree.posterTitle">Une journee de therapie, lecture et reconnexion.</h2>
+            <p data-res-i18n="soiree.posterText">Consultez l'affiche de l'evenement puis finalisez votre inscription depuis la page dediee.</p>
+          </div>
         </article>
       </div>
     </main>
@@ -90,5 +97,6 @@
     </footer>
   </div>
   <script src="script.js"></script>
+  <script src="reservation-system.js"></script>
 </body>
 </html>
