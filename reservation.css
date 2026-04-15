@@ -1,4 +1,4 @@
-﻿.soiree-layout-featured {
+.soiree-layout-featured {
   align-items: center;
 }
 
@@ -233,11 +233,13 @@
   position: fixed;
   left: -9999px;
   top: 0;
-  width: 900px;
-  padding: 28px;
-  background: linear-gradient(180deg, #16120d 0%, #0b0907 100%);
-  color: #f5eddc;
+  width: 794px;
+  height: 1056px;
+  padding: 0;
+  background: #faf6f1;
+  color: #3a3935;
   font-family: "Manrope", sans-serif;
+  overflow: hidden;
 }
 
 .reservation-ticket-render.ticket-ar {
@@ -247,74 +249,225 @@
 }
 
 .reservation-ticket-frame {
-  border: 1px solid rgba(216, 189, 132, 0.34);
-  border-radius: 32px;
-  overflow: hidden;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
-}
-
-.reservation-ticket-header {
-  display: grid;
-  grid-template-columns: 270px 1fr;
-  gap: 24px;
-  padding: 24px;
-  align-items: start;
-}
-
-.reservation-ticket-render.ticket-ar .reservation-ticket-header {
-  grid-template-columns: 1fr 270px;
-}
-
-.reservation-ticket-poster {
+  position: relative;
   width: 100%;
-  border-radius: 24px;
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #fef9f3 0%, #faf6f1 100%);
 }
 
-.reservation-ticket-copy {
+.reservation-ticket-bg-wrapper {
+  position: absolute;
+  inset: 0;
+  opacity: 0.25;
+}
+
+.reservation-ticket-poster-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reservation-ticket-overlay {
+  position: absolute;
+  inset: 0;
+  background: 
+    linear-gradient(180deg, rgba(250, 246, 241, 0.95) 0%, rgba(250, 246, 241, 0.92) 50%, rgba(250, 246, 241, 0.95) 100%);
+}
+
+.reservation-ticket-wrapper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 2.5rem 2rem;
+  gap: 1.8rem;
+}
+
+/* Header Section */
+.reservation-ticket-header {
+  text-align: center;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid rgba(216, 189, 132, 0.3);
+}
+
+.reservation-ticket-header-top {
+  margin-bottom: 0.8rem;
+}
+
+.reservation-ticket-event-label {
+  margin: 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(216, 189, 132, 0.8);
+  font-weight: 600;
+}
+
+.reservation-ticket-event-title {
+  margin: 0.4rem 0 0;
+  font-family: "Playfair Display", serif;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #5a4a3a;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+}
+
+.reservation-ticket-header-divider {
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(216, 189, 132, 0.4), transparent);
+  margin: 1rem auto;
+}
+
+.reservation-ticket-header-subtitle p {
+  margin: 0;
+  font-family: "Playfair Display", serif;
+  font-size: 1.15rem;
+  font-style: italic;
+  color: #8b7a6b;
+  letter-spacing: 0.01em;
+}
+
+/* Guest Section */
+.ticket-guest-section {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.ticket-guest-label {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(216, 189, 132, 0.9);
+  font-weight: 700;
+}
+
+.ticket-guest-name {
+  margin: 0.5rem 0 0;
+  font-family: "Playfair Display", serif;
+  font-size: 2.8rem;
+  font-weight: 600;
+  color: #5a4a3a;
+  line-height: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Details Grid */
+.ticket-details-grid {
   display: grid;
-  gap: 12px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+  padding: 1.2rem;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(216, 189, 132, 0.25);
+  border-radius: 1.2rem;
 }
 
-.reservation-ticket-copy h1,
-.reservation-ticket-copy h2,
-.reservation-ticket-copy p {
+.ticket-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.7rem;
+  background: rgba(216, 189, 132, 0.08);
+  border-radius: 0.8rem;
+  border: 1px solid rgba(216, 189, 132, 0.15);
+}
+
+.ticket-detail-item label {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(216, 189, 132, 0.85);
+  font-weight: 700;
   margin: 0;
 }
 
-.reservation-ticket-title {
-  color: #f0d39f;
-  font-size: 34px;
-  line-height: 1.12;
+.ticket-detail-item span {
+  font-size: 0.95rem;
+  color: #3a3935;
+  font-weight: 500;
+  line-height: 1.3;
+  word-break: break-word;
 }
 
-.reservation-ticket-grid {
+.ticket-email {
+  font-size: 0.88rem;
+}
+
+/* Footer Section */
+.reservation-ticket-footer-section {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  padding: 0 24px 24px;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  margin: auto 0 1rem;
 }
 
-.reservation-ticket-item {
-  padding: 14px 16px;
-  border: 1px solid rgba(216, 189, 132, 0.18);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.03);
+.ticket-code-box,
+.ticket-date-box {
+  padding: 0.8rem;
+  background: linear-gradient(135deg, rgba(216, 189, 132, 0.15), rgba(216, 189, 132, 0.08));
+  border: 1px solid rgba(216, 189, 132, 0.25);
+  border-radius: 0.8rem;
+  text-align: center;
 }
 
-.reservation-ticket-item strong,
-.reservation-ticket-item span {
+.ticket-code-label,
+.ticket-date-label {
   display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(216, 189, 132, 0.85);
+  font-weight: 700;
+  margin-bottom: 0.3rem;
 }
 
-.reservation-ticket-item strong {
-  margin-bottom: 6px;
-  color: #f0d39f;
+.ticket-code-value,
+.ticket-date-value {
+  display: block;
+  font-size: 0.9rem;
+  color: #5a4a3a;
+  font-weight: 600;
 }
 
+/* Footer */
 .reservation-ticket-footer {
-  padding: 0 24px 24px;
-  color: rgba(245, 237, 220, 0.72);
-  font-size: 15px;
+  text-align: center;
+  padding-top: 1rem;
+  border-top: 2px solid rgba(216, 189, 132, 0.2);
+  margin-top: auto;
+}
+
+.reservation-ticket-footer p {
+  margin: 0;
+  font-family: "Playfair Display", serif;
+  font-size: 1.05rem;
+  font-style: italic;
+  color: #8b7a6b;
+  letter-spacing: 0.01em;
+}
+
+/* Arabic RTL Adjustments */
+.reservation-ticket-render.ticket-ar .reservation-ticket-event-title {
+  font-family: "Amiri", serif;
+}
+
+.reservation-ticket-render.ticket-ar .ticket-guest-name,
+.reservation-ticket-render.ticket-ar .reservation-ticket-footer p,
+.reservation-ticket-render.ticket-ar .reservation-ticket-header-subtitle p {
+  font-family: "Amiri", serif;
+}
+
+@media (max-width: 960px) {
+  .reservation-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 body.lang-ar .reservation-hero,

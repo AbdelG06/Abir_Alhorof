@@ -1,42 +1,42 @@
 ﻿const reservationTranslations = {
   fr: {
-    pageTitle: "Reservation | Abir Al Horof",
+    pageTitle: "Réservation | Abir Al Horof",
     soiree: {
-      eyebrow: "Soiree a venir",
-      title: "Journee Therapie et Lecture : Se reconnecter a soi au coeur de la nature.",
-      description: "Une rencontre sensorielle et poetique animee par Madame Bouchera Safriiwi, Lamia Jam et Tiya, entre meditation, marche consciente et lecture partagee.",
-      notice: "Les places sont gratuites et limitees a une seule reservation par participant.",
-      cta: "Reserver",
+      eyebrow: "Soirée à venir",
+      title: "Journée Thérapie et Lecture : Se reconnecter à soi au cœur de la nature.",
+      description: "Une rencontre sensorielle et poétique animée par Madame Bouchera Safriiwi, Lamia Jam et Tiya, entre méditation, marche consciente et lecture partagée.",
+      notice: "Les places sont gratuites et limitées à une seule réservation par participant.",
+      cta: "Réserver",
       posterLabel: "Affiche",
-      posterTitle: "Une journee de therapie, lecture et reconnexion.",
-      posterText: "Consultez l'affiche de l'evenement puis finalisez votre inscription depuis la page dediee."
+      posterTitle: "Une journée de thérapie, lecture et reconnexion.",
+      posterText: "Consultez l'affiche de l'événement puis finalisez votre inscription depuis la page dédiée."
     },
     reservation: {
       eyebrow: "Inscriptions",
-      title: "Reservez votre place pour la soiree Abir Al Horof.",
-      lead: "Completez le formulaire une seule fois. Si vous etes deja inscrit, nous vous montrerons directement votre fiche et votre PDF.",
+      title: "Réservez votre place pour la soirée Abir Al Horof.",
+      lead: "Complétez le formulaire une seule fois. Si vous êtes déjà inscrit, nous vous montrerons directement votre fiche et votre PDF.",
       badgeFree: "Gratuit",
-      badgeSingle: "1 reservation par email ou telephone",
+      badgeSingle: "1 réservation par email ou téléphone",
       posterLabel: "Affiche officielle",
-      posterTitle: "Journee Therapie et Lecture",
-      posterText: "Se reconnecter a soi au coeur de la nature, dans une ambiance de lecture, de meditation et de marche consciente.",
+      posterTitle: "Journée Thérapie et Lecture",
+      posterText: "Se reconnecter à soi au cœur de la nature, dans une ambiance de lecture, de méditation et de marche consciente.",
       formKicker: "Formulaire bilingue",
       formTitle: "Confirmez votre participation",
-      formText: "Tous les champs obligatoires doivent etre completes avant l'envoi. L'adresse est facultative.",
+      formText: "Tous les champs obligatoires doivent être complétés avant l'envoi. L'adresse est facultative.",
       fields: {
         nom: "Nom",
-        prenom: "Prenom",
+        prenom: "Prénom",
         sexe: "Sexe",
         email: "Adresse email",
-        phone: "Numero de telephone",
+        phone: "Numéro de téléphone",
         address: "Adresse"
       },
       placeholders: {
         nom: "Votre nom",
-        prenom: "Votre prenom",
-        sexe: "Selectionner",
+        prenom: "Votre prénom",
+        sexe: "Sélectionner",
         email: "nom@email.com",
-        phone: "06 40 21 59 68",
+        phone: "06 XX XX XX XX",
         address: "Votre adresse"
       },
       gender: {
@@ -45,40 +45,40 @@
       },
       actions: {
         whatsapp: "Inscription via WhatsApp",
-        confirm: "Confirmer ma reservation"
+        confirm: "Confirmer ma réservation"
       },
       feedback: {
         required: "Merci de remplir correctement tous les champs obligatoires.",
-        saving: "Verification de votre inscription en cours...",
-        stored: "Votre inscription a bien ete enregistree.",
-        duplicate: "Vous etes deja inscrit. Votre PDF est pret.",
-        whatsapp: "Votre inscription a ete enregistree. WhatsApp va s'ouvrir avec vos informations.",
+        saving: "Vérification de votre inscription en cours...",
+        stored: "Votre inscription a bien été enregistrée.",
+        duplicate: "Vous êtes déjà inscrit. Votre PDF est prêt.",
+        whatsapp: "Votre inscription a été enregistrée. WhatsApp va s'ouvrir avec vos informations.",
         localMode: "Mode local actif en attendant la connexion Supabase.",
         saveError: "Impossible d'enregistrer votre inscription pour le moment."
       },
       modal: {
-        successEyebrow: "Inscription reussie",
-        successTitle: "Votre inscription a ete enregistree avec succes.",
-        successText: "Vous pouvez telecharger votre fiche en PDF ou poursuivre sur WhatsApp.",
-        existingEyebrow: "Deja inscrit",
-        existingTitle: "Cette personne est deja inscrite.",
-        existingText: "Nous avons retrouve votre inscription. Vous pouvez telecharger a nouveau votre PDF.",
-        download: "Telecharger le PDF",
+        successEyebrow: "Inscription réussie",
+        successTitle: "Votre inscription a été enregistrée avec succès.",
+        successText: "Vous pouvez télécharger votre fiche en PDF ou poursuivre sur WhatsApp.",
+        existingEyebrow: "Déjà inscrit",
+        existingTitle: "Cette personne est déjà inscrite.",
+        existingText: "Nous avons retrouvé votre inscription. Vous pouvez télécharger à nouveau votre PDF.",
+        download: "Télécharger le PDF",
         whatsapp: "Ouvrir WhatsApp"
       },
       pdf: {
-        title: "Fiche de reservation",
-        subtitle: "Journee Therapie et Lecture",
-        intro: "Confirmation de participation a l'evenement Abir Al Horof",
-        event: "Evenement",
+        title: "Fiche de réservation",
+        subtitle: "Journée Thérapie et Lecture",
+        intro: "Confirmation de participation à l'événement Abir Al Horof",
+        event: "Événement",
         date: "Date d'inscription",
         name: "Nom",
-        surname: "Prenom",
+        surname: "Prénom",
         gender: "Sexe",
         email: "Email",
-        phone: "Telephone",
+        phone: "Téléphone",
         address: "Adresse",
-        footer: "Reservation validee - Abir Al Horof"
+        footer: "Réservation validée - Abir Al Horof"
       }
     }
   },
@@ -169,6 +169,7 @@
 
 const reservationStorageKey = "abir-al-horof-reservations";
 let reservationPdfCache = null;
+let posterDataUrlCache = null;
 
 function reservationLang() {
   return sessionStorage.getItem("abir-al-horof-language") || "fr";
@@ -292,7 +293,7 @@ function openWhatsApp(data) {
   const config = getConfig();
   const message = reservationLang() === "ar"
     ? `السلام عليكم، اؤكد تسجيلي في يوم علاج وقراءة.\n\nالاسم العائلي: ${data.nom}\nالاسم الشخصي: ${data.prenom}\nالجنس: ${data.sexeLabel}\nالبريد الالكتروني: ${data.email}\nرقم الهاتف: ${data.phone}\nالعنوان: ${data.address || "غير مذكور"}`
-    : `Bonjour, je confirme mon inscription a la Journee Therapie et Lecture.\n\nNom: ${data.nom}\nPrenom: ${data.prenom}\nSexe: ${data.sexeLabel}\nEmail: ${data.email}\nTelephone: ${data.phone}\nAdresse: ${data.address || "Non renseignee"}`;
+    : `Bonjour, je confirme mon inscription à la Journée Thérapie et Lecture.\n\nNom: ${data.nom}\nPrénom: ${data.prenom}\nSexe: ${data.sexeLabel}\nEmail: ${data.email}\nTéléphone: ${data.phone}\nAdresse: ${data.address || "Non renseignée"}`;
   const url = `https://wa.me/${config.whatsappNumber || "212640215968"}?text=${encodeURIComponent(message)}`;
   window.open(url, "_blank", "noopener");
 }
@@ -371,85 +372,128 @@ async function saveReservationRemote(data) {
 }
 
 async function ensurePosterDataUrl() {
-  const response = await fetch("src/image/affiche.jpeg");
+  if (posterDataUrlCache) {
+    return posterDataUrlCache;
+  }
+  
+  const response = await fetch("src/image/affiche.PNG");
   const blob = await response.blob();
   return await new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
+    reader.onloadend = () => {
+      posterDataUrlCache = reader.result;
+      resolve(reader.result);
+    };
     reader.onerror = reject;
     reader.readAsDataURL(blob);
   });
 }
 
 function createTicketMarkup(data, posterDataUrl) {
-  const lang = reservationLang();
-  const copy = reservationTranslations[lang].reservation.pdf;
-  const emptyAddress = lang === "ar" ? "غير مذكور" : "Non renseignee";
-
-  return `
-    <div class="reservation-ticket-render ${lang === "ar" ? "ticket-ar" : "ticket-fr"}">
-      <div class="reservation-ticket-frame">
-        <div class="reservation-ticket-header">
-          <img class="reservation-ticket-poster" src="${posterDataUrl}" alt="Poster">
-          <div class="reservation-ticket-copy">
-            <p class="eyebrow">${copy.subtitle}</p>
-            <h1 class="reservation-ticket-title">${copy.title}</h1>
-            <p>${copy.intro}</p>
-            <p>${copy.event}: ${data.eventName}</p>
-          </div>
-        </div>
-        <div class="reservation-ticket-grid">
-          <div class="reservation-ticket-item"><strong>${copy.name}</strong><span>${data.nom}</span></div>
-          <div class="reservation-ticket-item"><strong>${copy.surname}</strong><span>${data.prenom}</span></div>
-          <div class="reservation-ticket-item"><strong>${copy.gender}</strong><span>${data.sexeLabel}</span></div>
-          <div class="reservation-ticket-item"><strong>${copy.date}</strong><span>${data.reservedAt}</span></div>
-          <div class="reservation-ticket-item"><strong>${copy.email}</strong><span>${data.email}</span></div>
-          <div class="reservation-ticket-item"><strong>${copy.phone}</strong><span>${data.phone}</span></div>
-          <div class="reservation-ticket-item" style="grid-column: 1 / -1;"><strong>${copy.address}</strong><span>${data.address || emptyAddress}</span></div>
-        </div>
-        <div class="reservation-ticket-footer">${copy.footer}</div>
-      </div>
-    </div>
-  `;
+  // Cette fonction n'est plus nécessaire - on utilise canvas directement
+  return '';
 }
 
 async function generateReservationPdf(data) {
   const { jsPDF } = window.jspdf;
-  const posterDataUrl = await ensurePosterDataUrl();
-  const wrapper = document.createElement("div");
-  wrapper.innerHTML = createTicketMarkup(data, posterDataUrl);
-  const ticketNode = wrapper.firstElementChild;
-  document.body.appendChild(ticketNode);
-
-  try {
-    const canvas = await window.html2canvas(ticketNode, {
-      scale: 2,
-      backgroundColor: "#0b0907",
-      useCORS: true
-    });
-
-    const imageData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF({ unit: "pt", format: "a4" });
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const ratio = Math.min((pageWidth - 40) / canvas.width, (pageHeight - 40) / canvas.height);
-    const renderWidth = canvas.width * ratio;
-    const renderHeight = canvas.height * ratio;
-    const x = (pageWidth - renderWidth) / 2;
-    const y = 20;
-
-    pdf.addImage(imageData, "PNG", x, y, renderWidth, renderHeight);
-
-    const fileName = `reservation-${data.nom}-${data.prenom}.pdf`.replace(/\s+/g, "-").toLowerCase();
-    const blob = pdf.output("blob");
-    const url = URL.createObjectURL(blob);
-
-    reservationPdfCache = { blob, url, fileName, data };
-    return reservationPdfCache;
-  } finally {
-    ticketNode.remove();
-  }
+  
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = async () => {
+      try {
+        // Create canvas with same dimensions as image
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        
+        // Draw the template image
+        ctx.drawImage(img, 0, 0);
+        
+        // Set text properties
+        ctx.fillStyle = "#2c1810";
+        ctx.font = "bold 26px Arial, sans-serif";
+        ctx.textAlign = "left";
+        
+        // Fill in the form fields based on template layout
+        const formStartY = img.height * 0.556;
+        const lineHeight = img.height * 0.048;
+        const fieldStartX = img.width * 0.15;
+        
+        // NOM
+        ctx.font = "bold 24px Arial, sans-serif";
+        const nomText = (data.nom || "").toUpperCase().substring(0, 35);
+        ctx.fillText(nomText, fieldStartX + 150, formStartY);
+        
+        // PRENOM
+        ctx.font = "bold 24px Arial, sans-serif";
+        const prenomText = (data.prenom || "").toUpperCase().substring(0, 35);
+        ctx.fillText(prenomText, fieldStartX + 150, formStartY + lineHeight);
+        
+        // SEXE - put X in checkbox
+        ctx.font = "bold 20px Arial, sans-serif";
+        const sexeCheckX = fieldStartX + 85;  // Position X for M
+        const sexeCheckF = fieldStartX + 142; // Position X for F
+        const sexeCheckY = formStartY + lineHeight * 1.85;
+        
+        if (data.sexe === "male") {
+          ctx.fillText("X", sexeCheckX, sexeCheckY);
+        } else if (data.sexe === "female") {
+          ctx.fillText("X", sexeCheckF, sexeCheckY);
+        }
+        
+        // DATE D'INSCRIPTION
+        ctx.font = "bold 20px Arial, sans-serif";
+        const dateText = (data.reservedAt || "").substring(0, 16);
+        ctx.fillText(dateText, fieldStartX + 290, formStartY + lineHeight * 2.8);
+        
+        // EMAIL
+        ctx.font = "bold 20px Arial, sans-serif";
+        const emailText = (data.email || "").substring(0, 38);
+        ctx.fillText(emailText, fieldStartX + 100, formStartY + lineHeight * 3.9);
+        
+        // NUM TELEPHONE
+        ctx.font = "bold 20px Arial, sans-serif";
+        const phoneText = (data.phone || "").substring(0, 25);
+        ctx.fillText(phoneText, fieldStartX + 160, formStartY + lineHeight * 5);
+        
+        // ADRESSE
+        ctx.font = "bold 18px Arial, sans-serif";
+        const addressText = (data.address || "Non renseignee").substring(0, 45);
+        ctx.fillText(addressText, fieldStartX + 130, formStartY + lineHeight * 6.2);
+        
+        // Convert canvas to image data and create PDF
+        const imageData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "px",
+          format: [img.width, img.height],
+          compress: true
+        });
+        
+        pdf.addImage(imageData, "PNG", 0, 0, img.width, img.height);
+        
+        const fileName = `reservation-${data.nom}-${data.prenom}.pdf`.replace(/\s+/g, "-").toLowerCase();
+        const blob = pdf.output("blob");
+        const url = URL.createObjectURL(blob);
+        
+        reservationPdfCache = { blob, url, fileName, data };
+        resolve(reservationPdfCache);
+      } catch (error) {
+        console.error("PDF generation error:", error);
+        reject(error);
+      }
+    };
+    img.onerror = () => {
+      const error = new Error("Failed to load template image: src/image/affichepdf.png");
+      console.error(error);
+      reject(error);
+    };
+    img.src = "src/image/affichepdf.png";
+  });
 }
+
 
 function setPdfDownloadLink(pdfFile) {
   const link = document.getElementById("reservationPdfLink");
@@ -473,14 +517,19 @@ function openReservationModal(mode, data, pdfFile) {
   setPdfDownloadLink(pdfFile);
   whatsappButton.onclick = () => openWhatsApp(data);
 
-  modal.hidden = false;
+  modal.removeAttribute("hidden");
+  modal.setAttribute("open", "");
   document.body.classList.add("gate-open");
+  
+  // Force a reflow to ensure the modal is visible
+  modal.offsetHeight;
 }
 
 function closeReservationModal() {
   const modal = document.getElementById("reservationModal");
   if (!modal) return;
   modal.hidden = true;
+  modal.removeAttribute("open");
   document.body.classList.remove("gate-open");
 }
 
