@@ -7,156 +7,118 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Playfair+Display:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="maintenance-style.css">
 </head>
-<body data-page="home">
-  <canvas class="particles-layer" id="particlesLayer" aria-hidden="true"></canvas>
-  <div class="site-shell">
-    <header class="header">
-      <nav class="navbar container">
-        <a class="brand" href="index.html" aria-label="Abir Al Horof Poetry Club">
-          <div class="logo-frame">
-            <canvas id="logoCanvas" class="logo-canvas" width="132" height="132" aria-hidden="true"></canvas>
-            <img id="logoSource" src="src/image/logo.png" alt="Logo Abir Al Horof" hidden>
-          </div>
-          <div class="brand-copy">
-            <span class="brand-title" data-i18n="brand.name">Abir Al Horof</span>
-            <span class="brand-subtitle" data-i18n="brand.tagline">Club de poésie et de musique</span>
-          </div>
-        </a>
-        <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">
-          <span></span>
-          <span></span>
-        </button>
-        <div class="nav-panel">
-          <div class="nav-links">
-            <a href="index.html" data-nav="home" data-i18n="nav.home">Accueil</a>
-            <a href="about.html" data-nav="about" data-i18n="nav.about">À propos</a>
-            <a href="activities.html" data-nav="activities" data-i18n="nav.activities">Activités</a>
-            <a href="soirees.html" data-nav="soirees" data-i18n="nav.soirees">Soirées</a>
-            <a href="poems.html" data-nav="poems" data-i18n="nav.poems">Poèmes</a>
-            <a href="contact.html" data-nav="contact" data-i18n="nav.contact">Contact</a>
-          </div>
-          <button class="lang-switch" type="button" aria-label="Changer la langue">
-            <span data-lang-current>FR</span>
-            <span class="lang-divider">/</span>
-            <span data-lang-target>AR</span>
-          </button>
-        </div>
-      </nav>
-    </header>
-    <main>
-      <section class="hero section">
-        <div class="container hero-grid">
-          <div class="hero-copy reveal">
-            <p class="eyebrow" data-i18n="home.eyebrow">Une maison pour les mots, la musique et l'âme.</p>
-            <h1 class="typing-text" data-typing data-i18n="home.title">Quand la poésie devient rencontre, lumière et présence.</h1>
-            <p class="hero-text" data-i18n="home.text">Abir Al Horof est un espace artistique où la sensibilité littéraire, la voix et la beauté du verbe se rencontrent dans une atmosphère élégante et inspirante.</p>
-            <div class="hero-actions">
-              <a class="button button-primary" href="about.html" data-i18n="home.ctaPrimary">Découvrir le club</a>
-              <a class="button button-secondary" href="join.html" data-i18n="home.ctaSecondary">Rejoindre le club</a>
-            </div>
-          </div>
-          <div class="hero-card reveal reveal-delay">
-            <div class="ornament"></div>
-            <div class="quote-block">
-              <p class="quote-mark">"</p>
-              <p class="quote-text" data-i18n="home.quote">Ici, la lettre respire, la voix s'élève et la scène accueille chaque émotion avec grâce.</p>
-            </div>
-            <div class="hero-meta">
-              <span data-i18n="home.metaOne">Poésie</span>
-              <span data-i18n="home.metaTwo">Musique</span>
-              <span data-i18n="home.metaThree">Création</span>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section class="section">
-        <div class="container split-grid">
-          <article class="feature-card reveal">
-            <p class="card-label" data-i18n="home.featureOne.label">Ambiance</p>
-            <h2 data-i18n="home.featureOne.title">Une esthétique sobre, chaleureuse et poétique.</h2>
-            <p data-i18n="home.featureOne.text">Le club cultive un cadre raffiné où la parole se déploie avec douceur, écoute et profondeur.</p>
-          </article>
-          <article class="feature-card reveal reveal-delay">
-            <p class="card-label" data-i18n="home.featureTwo.label">Vision</p>
-            <h2 data-i18n="home.featureTwo.title">Faire rayonner la poésie en français et en arabe.</h2>
-            <p data-i18n="home.featureTwo.text">Chaque page relie deux langues, deux rythmes et une même passion pour la beauté des mots.</p>
-          </article>
-        </div>
-      </section>
-      <section class="section">
-        <div class="container split-grid">
-          <article class="event-card reveal">
-            <p class="card-label" data-i18n="home.events.nextSoiree.label">Prochaine soirée</p>
-            <h2 data-i18n="home.events.nextSoiree.title">Bientôt / قريباً</h2>
-            <p data-i18n="home.events.nextSoiree.text">L'après-midi débute à 10h à la Ferme l'Olivier de Yasmine. Une rencontre sensorielle et poétique entre méditation, marche consciente et lecture partagée.</p>
-            <span class="status-pill" data-i18n="common.comingSoon">Bientot / قريباً</span>
-          </article>
-          <article class="feature-card reveal reveal-delay ticket-card">
-            <p class="card-label" data-i18n="home.ticket.label">Billetterie</p>
-            <h2 data-i18n="home.ticket.title">Réserve ta place pour les prochaines soirées.</h2>
-            <p data-i18n="home.ticket.text">Une interface de billetterie élégante est déjà prête pour accueillir les futures réservations du club.</p>
-            <a class="button button-primary" href="reservation.html" data-i18n="home.ticket.notice">Réserver maintenant</a>
-          </article>
-        </div>
-      </section>
-      <section class="section join-section" id="join-club">
-        <div class="container join-banner reveal">
-          <article class="feature-card join-cta-card">
-            <p class="card-label" data-i18n="home.join.label">Rejoindre عبير الحروف</p>
-            <h2 data-i18n="home.join.title">Entrez dans le cercle des voix, des ateliers et des futures rencontres.</h2>
-            <p data-i18n="home.join.text">Laissez-nous votre message pour recevoir les annonces du club et les informations d'inscription.</p>
-            <div class="join-cta-actions">
-              <a class="button button-primary" href="join.html" data-i18n="home.join.cta">Je souhaite rejoindre</a>
-              <a class="button button-secondary" href="contact.html" data-i18n="home.join.secondary">Nous contacter</a>
-            </div>
-          </article>
-        </div>
-      </section>
-    </main>
-    <footer class="footer">
-      <div class="container footer-content">
-        <div class="footer-copy-group">
-          <p data-i18n="footer.copy">Abir Al Horof Club de Poésie.</p>
-          <a class="footer-credit" href="https://www.instagram.com/abdelkrimgarwaoui_off/" target="_blank" rel="noreferrer">by abdel G</a>
-        </div>
-        <div class="footer-links">
-          <a class="social-link" href="mailto:abiralhorof@gmail.com">
-            <svg class="social-icon-mail" viewBox="0 0 24 24" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3.5 6.5H20.5V17.5H3.5V6.5Z" stroke="currentColor" stroke-width="1.8" rx="2"/>
-              <path d="M4.5 8L12 13.5L19.5 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>abiralhorof@gmail.com</span>
-          </a>
-          <a class="social-link" href="https://wa.me/212661962678" target="_blank" rel="noreferrer">
-            <img src="src/image/WhatsApp_Logo.webp" alt="WhatsApp">
-            <span>WhatsApp</span>
-          </a>
-          <a class="social-link" href="https://www.instagram.com/abir_al_horof/" target="_blank" rel="noreferrer">
-            <img src="src/image/Instagram_logo.webp" alt="Instagram">
-            <span>Instagram</span>
-          </a>
-          <a class="social-link" href="https://www.facebook.com/share/1CDxAFC4Yf/?mibextid=wwXIfr" target="_blank" rel="noreferrer">
-            <img src="src/image/Facebook_logo.svg" alt="Facebook">
-            <span>Facebook</span>
-          </a>
-        </div>
+<body>
+  <div class="maintenance-container">
+    <!-- Logo -->
+    <div class="logo-section">
+      <img src="src/image/logo.png" alt="Logo Abir Al Horof" class="maintenance-logo">
+      <div class="brand-text">
+        <h1 class="brand-name">Abir Al Horof</h1>
+        <p class="brand-tagline">Club de poésie et de musique</p>
       </div>
-    </footer>
-  </div>
-  <button class="quote-fab" id="quoteFab" type="button">
-    <span data-i18n="home.quotes.button">Inspire-moi ✨</span>
-  </button>
-  <div class="quote-modal" id="quoteModal" hidden>
-    <div class="quote-modal-backdrop" data-close-quote></div>
-    <div class="quote-modal-card" role="dialog" aria-modal="true" aria-labelledby="quoteModalTitle">
-      <button class="quote-close" type="button" aria-label="Fermer" data-close-quote>&times;</button>
-      <p class="eyebrow" id="quoteModalTitle" data-i18n="home.quotes.label">Inspiration poetique</p>
-      <blockquote class="quote-modal-text" id="quoteModalText"></blockquote>
-      <p class="quote-modal-author" id="quoteModalAuthor"></p>
+    </div>
+
+    <!-- Maintenance Message -->
+    <div class="maintenance-content">
+      <div class="maintenance-icon">🔧</div>
+      
+      <h2 class="maintenance-title">Page en cours de maintenance</h2>
+      <p class="maintenance-subtitle">عبير الحروف في صيانة</p>
+      
+      <p class="maintenance-message">
+        Nous optimisons notre site pour vous offrir une meilleure expérience.
+      </p>
+      <p class="maintenance-message-ar">
+        نحن نحسّن موقعنا لتقديم أفضل تجربة لك.
+      </p>
+      
+      <p class="maintenance-time">
+        ⏱️ Revenez très bientôt | عودوا قريباً جداً
+      </p>
+    </div>
+
+    <!-- Contact Info -->
+    <div class="contact-section">
+      <p class="contact-text">Pour toute question :</p>
+      <p class="contact-text-ar">لأي استفسار:</p>
+      <div class="social-links">
+        <a href="https://facebook.com" target="_blank" aria-label="Facebook" class="social-link">
+          <img src="src/image/Facebook_logo.svg" alt="Facebook">
+        </a>
+        <a href="https://instagram.com" target="_blank" aria-label="Instagram" class="social-link">
+          <img src="src/image/Instagram_logo.webp" alt="Instagram">
+        </a>
+        <a href="https://whatsapp.com" target="_blank" aria-label="WhatsApp" class="social-link">
+          <img src="src/image/WhatsApp_Logo.webp" alt="WhatsApp">
+        </a>
+      </div>
+    </div>
+
+    <!-- Animation -->
+    <div class="animation-dots">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
     </div>
   </div>
-  <script src="script.js"></script>
+
+  <style>
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes slide-up {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .maintenance-container {
+      animation: fadeInScale 0.8s ease-out;
+    }
+
+    .logo-section {
+      animation: slide-up 0.8s ease-out 0.2s both;
+    }
+
+    .maintenance-content {
+      animation: slide-up 0.8s ease-out 0.4s both;
+    }
+
+    .contact-section {
+      animation: slide-up 0.8s ease-out 0.6s both;
+    }
+
+    .dot {
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+
+    .dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+  </style>
 </body>
 </html>

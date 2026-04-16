@@ -398,98 +398,102 @@ async function generateReservationPdf(data) {
   const { jsPDF } = window.jspdf;
   
   return new Promise((resolve, reject) => {
+    // Load the background image
     const img = new Image();
     img.crossOrigin = "anonymous";
+    
     img.onload = async () => {
       try {
-        // Create canvas with same dimensions as image
+        // Create A4 PDF
+        const pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: "a4"
+        });
+
+        // Convert image to data URL and add to PDF as background
         const canvas = document.createElement("canvas");
         canvas.width = img.width;
         canvas.height = img.height;
         const ctx = canvas.getContext("2d");
-        
-        // Draw the template image
         ctx.drawImage(img, 0, 0);
+        const imgData = canvas.toDataURL("image/png");
         
+        // Add image to PDF (full page A4: 210x297mm)
+        pdf.addImage(imgData, "PNG", 0, 0, 210, 297);
+
         // Set text properties
-        ctx.fillStyle = "#2c1810";
-        ctx.font = "bold 26px Arial, sans-serif";
-        ctx.textAlign = "left";
+        pdf.setFont("Arial", "normal");
+        pdf.setTextColor(44, 24, 16); // #2c1810
+
+        // Positions calibrées avec TLÉPHONE et ADRESSE rajustées
+        const valueX = 55;  // Position X des valeurs
         
-        // Fill in the form fields based on template layout
-        const formStartY = img.height * 0.556;
-        const lineHeight = img.height * 0.048;
-        const fieldStartX = img.width * 0.15;
-        
-        // NOM
-        ctx.font = "bold 24px Arial, sans-serif";
-        const nomText = (data.nom || "").toUpperCase().substring(0, 35);
-        ctx.fillText(nomText, fieldStartX + 150, formStartY);
-        
-        // PRENOM
-        ctx.font = "bold 24px Arial, sans-serif";
-        const prenomText = (data.prenom || "").toUpperCase().substring(0, 35);
-        ctx.fillText(prenomText, fieldStartX + 150, formStartY + lineHeight);
-        
-        // SEXE - put X in checkbox
-        ctx.font = "bold 20px Arial, sans-serif";
-        const sexeCheckX = fieldStartX + 85;  // Position X for M
-        const sexeCheckF = fieldStartX + 142; // Position X for F
-        const sexeCheckY = formStartY + lineHeight * 1.85;
-        
+        // NOM - Line 1
+        pdf.setFontSize(12);
+        const nomText = (data.nom || "").toUpperCase().substring(0, 40);
+        pdf.text(nomText, valueX, 178);
+
+        // PRENOM - Line 2
+        pdf.setFontSize(12);
+        const prenomText = (data.prenom || "").toUpperCase().substring(0, 40);
+        pdf.text(prenomText, valueX, 190);
+
+        // SEXE - Line 3 (checkboxes)
+        pdf.setFontSize(11);
+        // M checkbox
         if (data.sexe === "male") {
-          ctx.fillText("X", sexeCheckX, sexeCheckY);
-        } else if (data.sexe === "female") {
-          ctx.fillText("X", sexeCheckF, sexeCheckY);
+          pdf.text("X", 50, 202);
         }
-        
-        // DATE D'INSCRIPTION
-        ctx.font = "bold 20px Arial, sans-serif";
-        const dateText = (data.reservedAt || "").substring(0, 16);
-        ctx.fillText(dateText, fieldStartX + 290, formStartY + lineHeight * 2.8);
-        
-        // EMAIL
-        ctx.font = "bold 20px Arial, sans-serif";
-        const emailText = (data.email || "").substring(0, 38);
-        ctx.fillText(emailText, fieldStartX + 100, formStartY + lineHeight * 3.9);
-        
-        // NUM TELEPHONE
-        ctx.font = "bold 20px Arial, sans-serif";
-        const phoneText = (data.phone || "").substring(0, 25);
-        ctx.fillText(phoneText, fieldStartX + 160, formStartY + lineHeight * 5);
-        
-        // ADRESSE
-        ctx.font = "bold 18px Arial, sans-serif";
-        const addressText = (data.address || "Non renseignee").substring(0, 45);
-        ctx.fillText(addressText, fieldStartX + 130, formStartY + lineHeight * 6.2);
-        
-        // Convert canvas to image data and create PDF
-        const imageData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF({
-          orientation: "portrait",
-          unit: "px",
-          format: [img.width, img.height],
-          compress: true
-        });
-        
-        pdf.addImage(imageData, "PNG", 0, 0, img.width, img.height);
-        
+        // F checkbox
+        if (data.sexe === "female") {
+          pdf.text("X", 62, 202);
+        }
+        // Autre checkbox
+        if (data.sexe === "autre" || data.sexe === "Autre") {
+          pdf.text("X", 82, 202);
+        }
+
+        // DATE D'INSCRIPTION - Line 4
+        pdf.setFontSize(12);
+        const dateText = (data.reservedAt || "").substring(0, 10);
+        pdf.text(dateText, valueX, 214);
+
+        // EMAIL - Line 5 (bien placé - garder)
+        pdf.setFontSize(12);
+        const emailText = (data.email || "").substring(0, 45);
+        pdf.text(emailText, valueX, 234);
+
+        // NUM TÉLÉPHONE - Line 6
+        pdf.setFontSize(12);
+        const phoneText = (data.phone || "").substring(0, 30);
+        pdf.text(phoneText, valueX, 253);
+
+        // ADRESSE - Line 7
+        pdf.setFontSize(12);
+        const addressText = (data.address || "").substring(0, 45);
+        pdf.text(addressText, valueX, 266);
+
         const fileName = `reservation-${data.nom}-${data.prenom}.pdf`.replace(/\s+/g, "-").toLowerCase();
         const blob = pdf.output("blob");
         const url = URL.createObjectURL(blob);
-        
+
         reservationPdfCache = { blob, url, fileName, data };
         resolve(reservationPdfCache);
+
       } catch (error) {
         console.error("PDF generation error:", error);
         reject(error);
       }
     };
+
     img.onerror = () => {
       const error = new Error("Failed to load template image: src/image/affichepdf.png");
       console.error(error);
       reject(error);
     };
+
+    // Load the image from src/image/affichepdf.png
     img.src = "src/image/affichepdf.png";
   });
 }

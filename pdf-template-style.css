@@ -1,0 +1,202 @@
+/* PDF Template Styles - Journée Printanière en Poésie */
+
+.pdf-container {
+  width: 210mm;
+  height: 297mm;
+  position: relative;
+  background: #faf8f3;
+  font-family: "Playfair Display", "Georgia", serif;
+  color: #2c1810;
+}
+
+/* Floral borders */
+.pdf-border-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to bottom, rgba(217, 181, 152, 0.1), transparent);
+  border-bottom: 2px solid rgba(216, 189, 132, 0.3);
+}
+
+.pdf-border-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to top, rgba(217, 181, 152, 0.1), transparent);
+  border-top: 2px solid rgba(216, 189, 132, 0.3);
+}
+
+/* Main content area */
+.pdf-content {
+  position: absolute;
+  top: 60px;
+  left: 40px;
+  right: 40px;
+  bottom: 60px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Form title section */
+.pdf-form-header {
+  text-align: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid rgba(216, 189, 132, 0.5);
+}
+
+.pdf-form-title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin: 0 0 8px 0;
+  color: #2c1810;
+}
+
+.pdf-form-subtitle {
+  font-size: 12px;
+  color: #7a6b5d;
+  letter-spacing: 1px;
+  margin: 0;
+  font-style: italic;
+}
+
+.pdf-ornament {
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #d9b598, transparent);
+  margin: 12px auto 0;
+}
+
+/* Form fields container */
+.pdf-fields-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  flex: 1;
+  justify-content: flex-start;
+}
+
+/* Individual form field */
+.pdf-field {
+  display: flex;
+  align-items: flex-end;
+  gap: 15px;
+  position: relative;
+}
+
+.pdf-field-label {
+  width: 160px;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #2c1810;
+  line-height: 1.2;
+  padding-bottom: 6px;
+}
+
+.pdf-field-value {
+  flex: 1;
+  font-size: 14px;
+  font-family: "Arial", sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  border-bottom: 1px solid #2c1810;
+  padding-bottom: 4px;
+  min-height: 20px;
+  display: flex;
+  align-items: flex-end;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+/* Special field: SEXE with checkboxes */
+.pdf-field-checkbox {
+  flex: 1;
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #2c1810;
+  min-height: 20px;
+  font-family: "Arial", sans-serif;
+}
+
+.pdf-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.pdf-checkbox-symbol {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* Date field - positioned differently */
+.pdf-field-date {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 150px;
+  text-align: right;
+}
+
+.pdf-field-date .pdf-field-label {
+  width: auto;
+  text-align: right;
+}
+
+/* QR Code area */
+.pdf-qr-area {
+  position: absolute;
+  bottom: 80px;
+  right: 40px;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 1px solid rgba(216, 189, 132, 0.3);
+  padding: 4px;
+}
+
+.pdf-qr-area img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Footer */
+.pdf-footer {
+  position: absolute;
+  bottom: 15px;
+  left: 40px;
+  right: 40px;
+  font-size: 10px;
+  color: #a89a80;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* Print styles */
+@media print {
+  .pdf-container {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+}
