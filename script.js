@@ -1,4 +1,4 @@
-const translations = {
+﻿const translations = {
   fr: {
     meta: {
       titles: {
@@ -94,36 +94,36 @@ const translations = {
       },
       quotes: {
         button: "Extrait poétique ✨",
-        label: "Inspiration po?tique"
+        label: "Inspiration poétique"
       }
     },
     about: {
-      eyebrow: "? propos du club",
-      title: "Un cercle de cr?ation d?di? ? la parole, au rythme et ? la sensibilit?.",
-      text: "Abir Al Horof rassemble les amoureux de la po?sie, de la musique et de l'expression artistique dans un esprit de transmission, de raffinement et de partage culturel.",
+      eyebrow: "À propos du club",
+      title: "Un cercle de création dédié à la parole, au rythme et à la sensibilité.",
+      text: "Abir Al Horof rassemble les amoureux de la poésie, de la musique et de l'expression artistique dans un esprit de transmission, de raffinement et de partage culturel.",
       foundersLabel: "Fondatrices et encadrantes",
-      foundersTitle: "Des voix qui accompagnent l'?closion des talents.",
-      foundersText: "Le club est port? par des personnalit?s p?dagogiques et artistiques qui nourrissent la sc?ne po?tique avec g?n?rosit?.",
-      person1: { name: "Prof Tiya", role: "Accompagnement po?tique et sensibilit? sc?nique." },
-      person2: { name: "Prof Bouchra", role: "Transmission litt?raire et animation culturelle." },
-      person3: { name: "Docteure Lamiyae", role: "Vision acad?mique, artistique et rayonnement du club." }
+      foundersTitle: "Des voix qui accompagnent l'éclosion des talents.",
+      foundersText: "Le club est porté par des personnalités pédagogiques et artistiques qui nourrissent la scène poétique avec générosité.",
+      person1: { name: "Prof Tiya", role: "Accompagnement poétique et sensibilité scénique." },
+      person2: { name: "Prof Bouchra", role: "Transmission littéraire et animation culturelle." },
+      person3: { name: "Docteure Lamiyae", role: "Vision académique, artistique et rayonnement du club." }
     },
     activities: {
       eyebrow: "Activités poétiques",
       title: "Des ateliers, des rencontres et des instants de création partagés.",
       text: "Le club propose un parcours sensible autour de l'écriture, de la diction et de l'expérience poétique vivante.",
       card1: { label: "Lecture", title: "Cercles de lecture et d'interprétation.", text: "Des moments pour lire, ressentir et approfondir la musicalité des textes." },
-      card2: { label: "Ecriture", title: "Ateliers poétiques.", text: "Un accompagnement structuré pour écrire, réviser et affiner sa voix poétique." },
-      card3: { label: "Scene", title: "Rencontres artistiques et performances.", text: "Des formats intimistes pour faire vivre la poésie à travers la voix et la présence." },
+      card2: { label: "Écriture", title: "Ateliers poétiques.", text: "Un accompagnement structuré pour écrire, réviser et affiner sa voix poétique." },
+      card3: { label: "Scène", title: "Rencontres artistiques et performances.", text: "Des formats intimistes pour faire vivre la poésie à travers la voix et la présence." },
     },
     soirees: {
-      eyebrow: "Soir?es po?tiques",
-      title: "Des nuits o? la sc?ne s'habille de voix, de lumi?re et de silence habit?.",
-      text: "Les soir?es du club r?unissent passionn?s, artistes et amis de la parole autour de moments d?licats et m?morables.",
+      eyebrow: "Soirées poétiques",
+      title: "Des nuits où la scène s'habille de voix, de lumière et de silence habité.",
+      text: "Les soirées du club réunissent passionnés, artistes et amis de la parole autour de moments délicats et mémorables.",
       card: {
         label: "Billetterie",
         title: "Les prochaines réservations ouvriront bientôt.",
-        text: "Retrouvez ici les details des nuits poetiques, les programmes et les liens de reservation des que disponibles."
+        text: "Retrouvez ici les détails des nuits poétiques, les programmes et les liens de réservation dès que disponibles."
       }
     },
     poems: {
@@ -299,32 +299,32 @@ const translations = {
 const quotePool = [
   {
     author: "Abir Al Horof",
-    fr: "La poesie commence quand le silence devient ecoute.",
+    fr: "La poésie commence quand le silence devient écoute.",
     ar: "يبدأ الشعر حين يتحول الصمت إلى إنصات."
   },
   {
     author: "Abir Al Horof",
-    fr: "Chaque mot choisi avec soin devient hospitalite.",
+    fr: "Chaque mot choisi avec soin devient hospitalité.",
     ar: "كل كلمة مختارة بعناية تصبح ضيافة."
   },
   {
     author: "Abir Al Horof",
-    fr: "La scene aime les paroles qui savent respirer.",
+    fr: "La scène aime les paroles qui savent respirer.",
     ar: "تحب المنصة الكلام الذي يعرف كيف يتنفس."
   },
   {
     author: "Abir Al Horof",
-    fr: "Le coeur comprend parfois avant la raison.",
+    fr: "Le cœur comprend parfois avant la raison.",
     ar: "يفهم القلب أحياناً قبل العقل."
   },
   {
     author: "Abir Al Horof",
-    fr: "La lumiere d'un club vient de celles et ceux qui l'habitent.",
+    fr: "La lumière d'un club vient de celles et ceux qui l'habitent.",
     ar: "يأتي ضوء النادي ممن يسكنونه."
   },
   {
     author: "Abir Al Horof",
-    fr: "القصيدة لا تفرض، بل تدعو.",
+    fr: "Le poème n'impose pas, il invite.",
     ar: "القصيدة لا تفرض، بل تدعو."
   }
 ];
@@ -485,10 +485,10 @@ function createLanguageGate() {
         <span>❦</span>
       </div>
       <h1 class="gate-title" id="gate-title">Choisissez votre langue<br>اختر لغتك</h1>
-      <p class="gate-subtitle">Entrez dans un univers de poesie et de musique.<br>ادخل إلى فضاء من الشعر والموسيقى.</p>
+      <p class="gate-subtitle">Entrez dans un univers de poésie et de musique.<br>ادخل إلى فضاء من الشعر والموسيقى.</p>
       <div class="gate-actions">
         <button class="gate-button" type="button" data-choice="fr">
-          <strong>Francais</strong>
+          <strong>Français</strong>
           <span>Entrer en FR</span>
         </button>
         <button class="gate-button" type="button" data-choice="ar">
@@ -758,3 +758,5 @@ function initialize() {
 }
 
 initialize();
+
+
