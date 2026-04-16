@@ -426,53 +426,57 @@ async function generateReservationPdf(data) {
         pdf.setFont("Arial", "normal");
         pdf.setTextColor(44, 24, 16); // #2c1810
 
-        // Positions calibrées avec TLÉPHONE et ADRESSE rajustées
-        const valueX = 55;  // Position X des valeurs
+        // Positions calibrées avec le template PDF réel (formulaire en bas de page)
+        const valueX = 54;  // Position X des valeurs
         
-        // NOM - Line 1
+        // NOM - Position correcte en bas du formulaire
         pdf.setFontSize(12);
-        const nomText = (data.nom || "").toUpperCase().substring(0, 40);
-        pdf.text(nomText, valueX, 178);
+        pdf.setFont("Arial", "bold");
+        const nomText = (data.nom || "").toUpperCase().substring(0, 35);
+        pdf.text(nomText, valueX, 223.5);
 
-        // PRENOM - Line 2
-        pdf.setFontSize(12);
-        const prenomText = (data.prenom || "").toUpperCase().substring(0, 40);
-        pdf.text(prenomText, valueX, 190);
+        // PRENOM - Ligne suivante
+        pdf.setFont("Arial", "bold");
+        const prenomText = (data.prenom || "").toUpperCase().substring(0, 35);
+        pdf.text(prenomText, valueX, 233.5);
 
-        // SEXE - Line 3 (checkboxes)
-        pdf.setFontSize(11);
+        // SEXE - Checkboxes M, F, Autre
+        pdf.setFont("Arial", "bold");
+        pdf.setFontSize(13);
+        const sexeY = 242.5;
         // M checkbox
         if (data.sexe === "male") {
-          pdf.text("X", 50, 202);
+          pdf.text("✘", 31.5, sexeY);
         }
         // F checkbox
         if (data.sexe === "female") {
-          pdf.text("X", 62, 202);
+          pdf.text("✘", 44, sexeY);
         }
         // Autre checkbox
         if (data.sexe === "autre" || data.sexe === "Autre") {
-          pdf.text("X", 82, 202);
+          pdf.text("✘", 56.5, sexeY);
         }
 
-        // DATE D'INSCRIPTION - Line 4
+        // DATE D'INSCRIPTION
+        pdf.setFont("Arial", "bold");
         pdf.setFontSize(12);
         const dateText = (data.reservedAt || "").substring(0, 10);
-        pdf.text(dateText, valueX, 214);
+        pdf.text(dateText, valueX, 251.5);
 
-        // EMAIL - Line 5 (bien placé - garder)
-        pdf.setFontSize(12);
-        const emailText = (data.email || "").substring(0, 45);
-        pdf.text(emailText, valueX, 234);
+        // EMAIL
+        pdf.setFont("Arial", "normal");
+        const emailText = (data.email || "").substring(0, 40);
+        pdf.text(emailText, valueX, 261);
 
-        // NUM TÉLÉPHONE - Line 6
-        pdf.setFontSize(12);
-        const phoneText = (data.phone || "").substring(0, 30);
-        pdf.text(phoneText, valueX, 253);
+        // NUM TÉLÉPHONE
+        pdf.setFont("Arial", "bold");
+        const phoneText = (data.phone || "").substring(0, 28);
+        pdf.text(phoneText, valueX, 270.5);
 
-        // ADRESSE - Line 7
-        pdf.setFontSize(12);
-        const addressText = (data.address || "").substring(0, 45);
-        pdf.text(addressText, valueX, 266);
+        // ADRESSE
+        pdf.setFont("Arial", "normal");
+        const addressText = (data.address || "").substring(0, 40);
+        pdf.text(addressText, valueX, 280);
 
         const fileName = `reservation-${data.nom}-${data.prenom}.pdf`.replace(/\s+/g, "-").toLowerCase();
         const blob = pdf.output("blob");

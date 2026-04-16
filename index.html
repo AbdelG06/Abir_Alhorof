@@ -44,13 +44,13 @@
       <p class="contact-text">Pour toute question :</p>
       <p class="contact-text-ar">لأي استفسار:</p>
       <div class="social-links">
-        <a href="https://facebook.com" target="_blank" aria-label="Facebook" class="social-link">
+        <a href="https://www.facebook.com/share/1CDxAFC4Yf/?mibextid=wwXIfr" target="_blank" aria-label="Facebook" class="social-link">
           <img src="src/image/Facebook_logo.svg" alt="Facebook">
         </a>
-        <a href="https://instagram.com" target="_blank" aria-label="Instagram" class="social-link">
+        <a href="https://www.instagram.com/abir_al_horof/" target="_blank" aria-label="Instagram" class="social-link">
           <img src="src/image/Instagram_logo.webp" alt="Instagram">
         </a>
-        <a href="https://whatsapp.com" target="_blank" aria-label="WhatsApp" class="social-link">
+        <a href="https://wa.me/212661962678" target="_blank" aria-label="WhatsApp" class="social-link">
           <img src="src/image/WhatsApp_Logo.webp" alt="WhatsApp">
         </a>
       </div>
@@ -62,6 +62,11 @@
       <span class="dot"></span>
       <span class="dot"></span>
     </div>
+
+    <!-- Footer -->
+    <footer class="maintenance-footer">
+      <a class="footer-credit" href="https://www.instagram.com/abdelkrimgarwaoui_off/" target="_blank" rel="noreferrer">by abdel G</a>
+    </footer>
   </div>
 
   <style>
@@ -118,6 +123,107 @@
 
     .dot:nth-child(3) {
       animation-delay: 0.4s;
+    }
+
+    /* Footer */
+    .maintenance-footer {
+      margin-top: 4rem;
+      padding: 2rem 2rem;
+      text-align: center;
+      animation: slide-up 0.8s ease-out 0.8s both;
+      position: relative;
+    }
+
+    .maintenance-footer::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      border-radius: 1px;
+    }
+
+    .maintenance-footer p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      font-family: "Manrope", sans-serif;
+      text-transform: uppercase;
+      position: relative;
+      display: inline-block;
+    }
+
+    .maintenance-footer a {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      font-family: "Manrope", sans-serif;
+      text-transform: uppercase;
+      position: relative;
+      display: inline-block;
+      text-decoration: none;
+      cursor: pointer;
+      animation: footer-glow 2.5s ease-in-out infinite;
+      transition: all 0.3s ease;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+    }
+
+    @keyframes footer-glow {
+      0%, 100% {
+        text-shadow: 0 0 10px rgba(216, 189, 132, 0.4);
+      }
+      50% {
+        text-shadow: 0 0 20px rgba(216, 189, 132, 0.8);
+      }
+    }
+
+    .maintenance-footer a:hover {
+      transform: scale(1.08) translateY(-2px);
+      text-shadow: 0 0 30px rgba(216, 189, 132, 1), 0 0 50px rgba(216, 189, 132, 0.6);
+      background: rgba(216, 189, 132, 0.1);
+      padding: 0.5rem 1.2rem;
+    }
+
+    .maintenance-footer a:active {
+      transform: scale(1.04) translateY(0);
+    }
+
+    .maintenance-footer p::after,
+    .maintenance-footer a::after {
+      content: "";
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      transition: width 0.4s ease;
+    }
+
+    .maintenance-footer p:hover::after,
+    .maintenance-footer a:hover::after {
+      width: 80%;
+    }
+
+    @media (max-width: 640px) {
+      .maintenance-footer {
+        margin-top: 3rem;
+        padding: 1.5rem 1rem;
+      }
+
+      .maintenance-footer p {
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+      }
     }
   </style>
 </body>

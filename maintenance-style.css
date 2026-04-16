@@ -256,6 +256,68 @@ body::after {
   box-shadow: 0 0 10px rgba(216, 189, 132, 0.5);
 }
 
+/* ===== Footer ===== */
+.maintenance-footer {
+  margin-top: 4rem;
+  padding: 2rem 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.maintenance-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  border-radius: 1px;
+}
+
+.maintenance-footer p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  font-family: "Manrope", sans-serif;
+  text-transform: uppercase;
+  position: relative;
+  display: inline-block;
+}
+
+.maintenance-footer a {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  font-family: "Manrope", sans-serif;
+  text-transform: uppercase;
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.maintenance-footer p::after,
+.maintenance-footer a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--gold);
+  transition: width 0.4s ease;
+}
+
+.maintenance-footer p:hover::after,
+.maintenance-footer a:hover::after {
+  width: 100%;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 640px) {
   .maintenance-container {
@@ -332,5 +394,16 @@ body::after {
 
   .brand-tagline {
     font-size: 0.85rem;
+  }
+
+  .maintenance-footer {
+    margin-top: 3rem;
+    padding: 1.5rem 1rem;
+  }
+
+  .maintenance-footer p,
+  .maintenance-footer a {
+    font-size: 0.85rem;
+    letter-spacing: 1px;
   }
 }
