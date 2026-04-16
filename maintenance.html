@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abir Al Horof | عبير الحروف</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Playfair+Display:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="maintenance-style.css">
+</head>
+<body>
+  <div class="maintenance-container">
+    <!-- Logo -->
+    <div class="logo-section">
+      <img src="src/image/logo.png" alt="Logo Abir Al Horof" class="maintenance-logo">
+      <div class="brand-text">
+        <h1 class="brand-name">Abir Al Horof</h1>
+        <p class="brand-tagline">Club de poésie et de musique</p>
+      </div>
+    </div>
+
+    <!-- Maintenance Message -->
+    <div class="maintenance-content">
+      <div class="maintenance-icon">🔧</div>
+      
+      <h2 class="maintenance-title">Page en cours de maintenance</h2>
+      <p class="maintenance-subtitle">عبير الحروف في صيانة</p>
+      
+      <p class="maintenance-message">
+        Nous optimisons notre site pour vous offrir une meilleure expérience.
+      </p>
+      <p class="maintenance-message-ar">
+        نحن نحسّن موقعنا لتقديم أفضل تجربة لك.
+      </p>
+      
+      <p class="maintenance-time">
+        ⏱️ Revenez très bientôt | عودوا قريباً جداً
+      </p>
+    </div>
+
+    <!-- Contact Info -->
+    <div class="contact-section">
+      <p class="contact-text">Pour toute question :</p>
+      <p class="contact-text-ar">لأي استفسار:</p>
+      <div class="social-links">
+        <a href="https://www.facebook.com/share/1CDxAFC4Yf/?mibextid=wwXIfr" target="_blank" aria-label="Facebook" class="social-link">
+          <img src="src/image/Facebook_logo.svg" alt="Facebook">
+        </a>
+        <a href="https://www.instagram.com/abir_al_horof/" target="_blank" aria-label="Instagram" class="social-link">
+          <img src="src/image/Instagram_logo.webp" alt="Instagram">
+        </a>
+        <a href="https://wa.me/212661962678" target="_blank" aria-label="WhatsApp" class="social-link">
+          <img src="src/image/WhatsApp_Logo.webp" alt="WhatsApp">
+        </a>
+      </div>
+    </div>
+
+    <!-- Animation -->
+    <div class="animation-dots">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="maintenance-footer">
+      <a class="footer-credit" href="https://www.instagram.com/abdelkrimgarwaoui_off/" target="_blank" rel="noreferrer">by abdel G</a>
+    </footer>
+  </div>
+
+  <style>
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes slide-up {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .maintenance-container {
+      animation: fadeInScale 0.8s ease-out;
+    }
+
+    .logo-section {
+      animation: slide-up 0.8s ease-out 0.2s both;
+    }
+
+    .maintenance-content {
+      animation: slide-up 0.8s ease-out 0.4s both;
+    }
+
+    .contact-section {
+      animation: slide-up 0.8s ease-out 0.6s both;
+    }
+
+    .dot {
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+
+    .dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    /* Footer */
+    .maintenance-footer {
+      margin-top: 4rem;
+      padding: 2rem 2rem;
+      text-align: center;
+      animation: slide-up 0.8s ease-out 0.8s both;
+      position: relative;
+    }
+
+    .maintenance-footer::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      border-radius: 1px;
+    }
+
+    .maintenance-footer p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      font-family: "Manrope", sans-serif;
+      text-transform: uppercase;
+      position: relative;
+      display: inline-block;
+    }
+
+    .maintenance-footer a {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      font-family: "Manrope", sans-serif;
+      text-transform: uppercase;
+      position: relative;
+      display: inline-block;
+      text-decoration: none;
+      cursor: pointer;
+      animation: footer-glow 2.5s ease-in-out infinite;
+      transition: all 0.3s ease;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+    }
+
+    @keyframes footer-glow {
+      0%, 100% {
+        text-shadow: 0 0 10px rgba(216, 189, 132, 0.4);
+      }
+      50% {
+        text-shadow: 0 0 20px rgba(216, 189, 132, 0.8);
+      }
+    }
+
+    .maintenance-footer a:hover {
+      transform: scale(1.08) translateY(-2px);
+      text-shadow: 0 0 30px rgba(216, 189, 132, 1), 0 0 50px rgba(216, 189, 132, 0.6);
+      background: rgba(216, 189, 132, 0.1);
+      padding: 0.5rem 1.2rem;
+    }
+
+    .maintenance-footer a:active {
+      transform: scale(1.04) translateY(0);
+    }
+
+    .maintenance-footer p::after,
+    .maintenance-footer a::after {
+      content: "";
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      transition: width 0.4s ease;
+    }
+
+    .maintenance-footer p:hover::after,
+    .maintenance-footer a:hover::after {
+      width: 80%;
+    }
+
+    @media (max-width: 640px) {
+      .maintenance-footer {
+        margin-top: 3rem;
+        padding: 1.5rem 1rem;
+      }
+
+      .maintenance-footer p {
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+      }
+    }
+  </style>
+</body>
+</html>

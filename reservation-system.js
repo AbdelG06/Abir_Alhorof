@@ -396,6 +396,54 @@ function createTicketMarkup(data, posterDataUrl) {
 
 async function generateReservationPdf(data) {
   const { jsPDF } = window.jspdf;
+
+  const formatPdfDate = (value) => {
+    if (!value) return "";
+
+    if (value instanceof Date && !Number.isNaN(value.getTime())) {
+      return value.toLocaleDateString("fr-FR");
+    }
+
+    if (typeof value === "string") {
+      const trimmedValue = value.trim();
+      const isoMatch = trimmedValue.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (isoMatch) {
+        return `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]}`;
+      }
+
+      const dateMatch = trimmedValue.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if (dateMatch) {
+        return `${dateMatch[1].padStart(2, "0")}/${dateMatch[2].padStart(2, "0")}/${dateMatch[3]}`;
+      }
+
+      const parsedDate = new Date(trimmedValue);
+      if (!Number.isNaN(parsedDate.getTime())) {
+        return parsedDate.toLocaleDateString("fr-FR");
+      }
+    }
+
+    return String(value).substring(0, 10);
+  };
+
+  const normalizePdfText = (value, { uppercase = false } = {}) => {
+    const text = String(value || "").trim().replace(/\s+/g, " ");
+    return uppercase ? text.toUpperCase() : text;
+  };
+
+  const fitPdfText = (pdf, value, maxWidth, options = {}) => {
+    const normalizedText = normalizePdfText(value, options);
+    if (!normalizedText) return "";
+    if (pdf.getTextWidth(normalizedText) <= maxWidth) {
+      return normalizedText;
+    }
+
+    let shortenedText = normalizedText;
+    while (shortenedText.length > 1 && pdf.getTextWidth(`${shortenedText}...`) > maxWidth) {
+      shortenedText = shortenedText.slice(0, -1).trimEnd();
+    }
+
+    return shortenedText ? `${shortenedText}...` : "";
+  };
   
   return new Promise((resolve, reject) => {
     // Load the background image
@@ -426,57 +474,45 @@ async function generateReservationPdf(data) {
         pdf.setFont("Arial", "normal");
         pdf.setTextColor(44, 24, 16); // #2c1810
 
-        // Positions calibrées avec le template PDF réel (formulaire en bas de page)
-        const valueX = 54;  // Position X des valeurs
-        
-        // NOM - Position correcte en bas du formulaire
-        pdf.setFontSize(12);
-        pdf.setFont("Arial", "bold");
-        const nomText = (data.nom || "").toUpperCase().substring(0, 35);
-        pdf.text(nomText, valueX, 223.5);
+        // Coordonnees recalculees a partir du vrai template
+        const fieldLayout = {
+          nom: { x: 51.5, y: 198.8, maxWidth: 92, font: "bold", size: 11.5, uppercase: true },
+          prenom: { x: 61, y: 208.4, maxWidth: 82, font: "bold", size: 11.2, uppercase: true },
+          date: { x: 84.2, y: 224.8, maxWidth: 48, font: "bold", size: 9.4, clearHeight: 4.2, clearOffsetY: 3.1 },
+          email: { x: 48.2, y: 233.3, maxWidth: 84, font: "normal", size: 8.6, clearHeight: 4.3, clearOffsetY: 3.1 },
+          phone: { x: 75.8, y: 241.8, maxWidth: 57, font: "bold", size: 9.0, clearHeight: 4.3, clearOffsetY: 3.1 },
+          address: { x: 55.2, y: 250.3, maxWidth: 78, font: "normal", size: 7.4, clearHeight: 4.0, clearOffsetY: 2.9 }
+        };
 
-        // PRENOM - Ligne suivante
-        pdf.setFont("Arial", "bold");
-        const prenomText = (data.prenom || "").toUpperCase().substring(0, 35);
-        pdf.text(prenomText, valueX, 233.5);
+        const drawField = (key, value) => {
+          const layout = fieldLayout[key];
+          const text = fitPdfText(pdf, value, layout.maxWidth, { uppercase: layout.uppercase });
+          pdf.setFont("Arial", layout.font);
+          pdf.setFontSize(layout.size);
+          pdf.text(text, layout.x, layout.y);
+        };
 
-        // SEXE - Checkboxes M, F, Autre
-        pdf.setFont("Arial", "bold");
-        pdf.setFontSize(13);
-        const sexeY = 242.5;
-        // M checkbox
+        const drawCheckboxMark = (boxX, boxY, boxSize) => {
+          const inset = 0.7;
+          pdf.setDrawColor(44, 24, 16);
+          pdf.setLineWidth(0.75);
+          pdf.line(boxX + inset, boxY + inset, boxX + boxSize - inset, boxY + boxSize - inset);
+          pdf.line(boxX + boxSize - inset, boxY + inset, boxX + inset, boxY + boxSize - inset);
+        };
+
+        drawField("nom", data.nom);
+        drawField("prenom", data.prenom);
+
         if (data.sexe === "male") {
-          pdf.text("✘", 31.5, sexeY);
-        }
-        // F checkbox
-        if (data.sexe === "female") {
-          pdf.text("✘", 44, sexeY);
-        }
-        // Autre checkbox
-        if (data.sexe === "autre" || data.sexe === "Autre") {
-          pdf.text("✘", 56.5, sexeY);
+          drawCheckboxMark(47.95, 212.85, 4.95);
+        } else if (data.sexe === "female") {
+          drawCheckboxMark(71.2, 212.85, 4.7);
         }
 
-        // DATE D'INSCRIPTION
-        pdf.setFont("Arial", "bold");
-        pdf.setFontSize(12);
-        const dateText = (data.reservedAt || "").substring(0, 10);
-        pdf.text(dateText, valueX, 251.5);
-
-        // EMAIL
-        pdf.setFont("Arial", "normal");
-        const emailText = (data.email || "").substring(0, 40);
-        pdf.text(emailText, valueX, 261);
-
-        // NUM TÉLÉPHONE
-        pdf.setFont("Arial", "bold");
-        const phoneText = (data.phone || "").substring(0, 28);
-        pdf.text(phoneText, valueX, 270.5);
-
-        // ADRESSE
-        pdf.setFont("Arial", "normal");
-        const addressText = (data.address || "").substring(0, 40);
-        pdf.text(addressText, valueX, 280);
+        drawField("date", formatPdfDate(data.reservedAt));
+        drawField("email", data.email);
+        drawField("phone", data.phone);
+        drawField("address", data.address);
 
         const fileName = `reservation-${data.nom}-${data.prenom}.pdf`.replace(/\s+/g, "-").toLowerCase();
         const blob = pdf.output("blob");
@@ -638,3 +674,12 @@ function setupReservationLanguageBridge() {
 
 setupReservationLanguageBridge();
 setupReservationForm();
+
+
+
+
+
+
+
+
+
