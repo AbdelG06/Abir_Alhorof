@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Admin | Abir Al Horof</title>
+  <title>Inscriptions Admin | Abir Al Horof</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Playfair+Display:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="admin-dashboard.css">
 </head>
-<body data-admin-page="true" data-admin-view="dashboard">
+<body data-admin-page="true" data-admin-view="inscriptions">
   <main class="admin-shell">
     <section class="auth-shell" id="adminLoginScreen">
       <div class="auth-card">
         <img class="auth-logo" src="src/image/logo.png" alt="Logo Abir Al Horof">
         <p class="auth-kicker">Abir Al Horof</p>
         <h1>Connexion Admin</h1>
-        <p class="auth-copy">Accedez au dashboard des statistiques et au suivi des participants.</p>
+        <p class="auth-copy">Connectez-vous pour gerer la presence et contacter les inscrits.</p>
 
         <form id="adminLoginForm" class="auth-form" novalidate>
           <label>
@@ -42,15 +42,16 @@
           <img class="brand-logo" src="src/image/logo.png" alt="Logo Abir Al Horof">
           <div>
             <p class="panel-kicker">Back Office</p>
-            <h1>Dashboard Admin</h1>
-            <p class="panel-subtitle">Statistiques globales et suivi de presence des inscrits.</p>
+            <h1>Inscriptions Soiree</h1>
+            <p class="panel-subtitle">Liste complete des inscrits avec actions presence, WhatsApp et PDF.</p>
             <p class="panel-meta" id="lastSync">Derniere synchro: --</p>
           </div>
         </div>
 
         <div class="panel-actions">
           <button id="refreshData" class="admin-btn admin-btn-secondary" type="button">Actualiser</button>
-          <a class="admin-btn admin-btn-primary" href="admin-inscriptions.html">Ouvrir la page inscriptions</a>
+          <button id="exportCsv" class="admin-btn admin-btn-secondary" type="button">Exporter CSV</button>
+          <a class="admin-btn admin-btn-primary" href="admin-portal.html">Retour dashboard</a>
           <button id="logoutAdmin" class="admin-btn admin-btn-ghost" type="button">Deconnexion</button>
         </div>
       </header>
@@ -62,95 +63,62 @@
 
       <p class="admin-status-banner" id="dataSourceBanner" aria-live="polite"></p>
 
-      <section class="admin-stats-grid" aria-label="Statistiques dashboard">
+      <section class="admin-stats-grid" aria-label="Statistiques inscriptions">
         <article class="admin-stat-card">
           <p>Total inscrits</p>
           <strong id="statTotalReservations">0</strong>
         </article>
-
         <article class="admin-stat-card">
           <p>Presents</p>
           <strong id="statPresent">0</strong>
         </article>
-
         <article class="admin-stat-card">
           <p>Absents</p>
           <strong id="statAbsent">0</strong>
         </article>
-
         <article class="admin-stat-card">
           <p>En attente</p>
           <strong id="statUnknown">0</strong>
         </article>
-
         <article class="admin-stat-card">
           <p>Taux de presence</p>
           <strong id="statPresenceRate">0%</strong>
         </article>
-
         <article class="admin-stat-card">
-          <p>Inscriptions aujourd'hui</p>
-          <strong id="statTodayReservations">0</strong>
-        </article>
-
-        <article class="admin-stat-card">
-          <p>Visites total</p>
-          <strong id="statTotalVisits">0</strong>
-        </article>
-
-        <article class="admin-stat-card">
-          <p>Visiteurs uniques</p>
-          <strong id="statUniqueVisitors">0</strong>
+          <p>Resultats filtres</p>
+          <strong id="statFiltered">0</strong>
         </article>
       </section>
 
-      <section class="admin-panels-grid">
-        <article class="admin-panel">
-          <div class="admin-panel-head">
-            <h2>Actions rapides</h2>
-          </div>
-          <p class="panel-text">Le jour de l'evenement, ouvrez la page inscriptions pour marquer chaque participant Present ou Absent.</p>
-          <div class="panel-actions-wrap">
-            <a class="admin-btn admin-btn-primary" href="admin-inscriptions.html">Gerer les inscrits</a>
-            <a class="admin-btn admin-btn-secondary" href="reservation.html">Voir la page reservation</a>
-          </div>
-        </article>
+      <section class="admin-panel full-width-panel">
+        <div class="admin-panel-head">
+          <h2>Liste participants</h2>
+        </div>
 
-        <article class="admin-panel">
-          <div class="admin-panel-head">
-            <h2>Derniers inscrits</h2>
-          </div>
-          <ul class="admin-list" id="recentRegistrations"></ul>
-        </article>
+        <div class="inscriptions-toolbar">
+          <input type="search" id="reservationSearch" placeholder="Rechercher nom, prenom, email, telephone...">
+          <input type="date" id="filterFrom" aria-label="Date debut">
+          <input type="date" id="filterTo" aria-label="Date fin">
+          <button id="resetFilters" class="admin-btn admin-btn-secondary" type="button">Reset</button>
+        </div>
 
-        <article class="admin-panel">
-          <div class="admin-panel-head">
-            <h2>Top pages visitees</h2>
-          </div>
-          <ul class="admin-list" id="topPages"></ul>
-        </article>
-
-        <article class="admin-panel">
-          <div class="admin-panel-head">
-            <h2>Repartition langues</h2>
-          </div>
-          <ul class="admin-list" id="languageBreakdown"></ul>
-        </article>
-
-        <article class="admin-panel">
-          <div class="admin-panel-head">
-            <h2>Repartition sexes</h2>
-          </div>
-          <ul class="admin-list" id="genderBreakdown"></ul>
-        </article>
-
-        <article class="admin-panel full-width-panel">
-          <div class="admin-panel-head">
-            <h2>Messages Join</h2>
-          </div>
-          <p class="panel-text" id="formspreeMessagesStatus">Chargement des messages...</p>
-          <ul class="admin-list" id="formspreeMessages"></ul>
-        </article>
+        <div class="inscriptions-table-wrap">
+          <table class="inscriptions-table">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Prenom</th>
+                <th>Telephone</th>
+                <th>Email</th>
+                <th>Date inscription</th>
+                <th>Presence</th>
+                <th>WhatsApp</th>
+                <th>PDF</th>
+              </tr>
+            </thead>
+            <tbody id="reservationRows"></tbody>
+          </table>
+        </div>
       </section>
     </section>
   </main>
@@ -163,7 +131,6 @@
       supabaseAnonKey: "sb_publishable_8kvL_h759FIOlE_y4qKyHw_zofghELR",
       reservationsTable: "reservations",
       visitsTable: "site_visits",
-      joinMessagesTable: "join_messages",
       whatsappFallbackNumber: "212640215968"
     };
   </script>

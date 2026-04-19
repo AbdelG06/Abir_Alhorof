@@ -335,11 +335,13 @@ const langKey = "abir-al-horof-language";
 const gateKey = "abir-al-horof-language-gate";
 const visitStorageKey = "abir-al-horof-local-visits";
 const visitorStorageKey = "abir-al-horof-visitor-id";
+const joinMessagesStorageKey = "abir-join-form-messages";
 const visitTrackedFlag = "__abirVisitTracked";
 const trackingConfig = {
   supabaseUrl: "https://afyginoozdcrvywakshj.supabase.co",
   supabaseAnonKey: "sb_publishable_8kvL_h759FIOlE_y4qKyHw_zofghELR",
-  visitsTable: "site_visits"
+  visitsTable: "site_visits",
+  joinMessagesTable: "join_messages"
 };
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let typingTimer = 0;
@@ -428,6 +430,29 @@ async function trackSiteVisit() {
     }
   } catch (error) {
     saveLocalVisit(visitPayload);
+  }
+}
+
+async function mirrorJoinMessageToSupabase(messagePayload) {
+  const { supabaseUrl, supabaseAnonKey, joinMessagesTable } = trackingConfig;
+  if (!supabaseUrl || !supabaseAnonKey || !joinMessagesTable) {
+    return;
+  }
+
+  try {
+    await fetch(`${supabaseUrl}/rest/v1/${joinMessagesTable}`, {
+      method: "POST",
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal"
+      },
+      body: JSON.stringify([messagePayload]),
+      keepalive: true
+    });
+  } catch (error) {
+    // Keep Formspree flow even if Supabase mirror fails.
   }
 }
 
@@ -812,6 +837,43 @@ function setupForm() {
       feedback.textContent = pick(translations[getLang()], fieldErrorKey(invalid.dataset.field)) || "";
       invalid.focus();
       return;
+    }
+
+    let cachedPayload = null;
+
+    try {
+      const previousMessages = JSON.parse(localStorage.getItem(joinMessagesStorageKey) || "[]");
+      const nextMessages = Array.isArray(previousMessages) ? previousMessages : [];
+      cachedPayload = {
+        name: form.elements.name?.value?.trim() || "",
+        email: form.elements.email?.value?.trim() || "",
+        message: form.elements.message?.value?.trim() || "",
+        language: getLang(),
+        createdAt: new Date().toISOString(),
+        source: "join-form"
+      };
+      nextMessages.push(cachedPayload);
+
+      if (nextMessages.length > 250) {
+        nextMessages.splice(0, nextMessages.length - 250);
+      }
+
+      localStorage.setItem(joinMessagesStorageKey, JSON.stringify(nextMessages));
+    } catch (error) {
+      // Keep submission flow even if local cache fails.
+    }
+
+    if (cachedPayload) {
+      mirrorJoinMessageToSupabase({
+        name: cachedPayload.name,
+        email: cachedPayload.email,
+        message: cachedPayload.message,
+        language: cachedPayload.language,
+        source: cachedPayload.source,
+        page_path: window.location.pathname || "/join.html",
+        user_agent: String(navigator.userAgent || "").slice(0, 255),
+        created_at: cachedPayload.createdAt
+      });
     }
 
     feedback.dataset.state = "success";

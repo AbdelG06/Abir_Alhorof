@@ -70,3 +70,51 @@ on public.site_visits
 for insert
 to anon
 with check (true);
+
+create table if not exists public.join_messages (
+  id uuid primary key default gen_random_uuid(),
+  name text,
+  email text,
+  message text,
+  language text not null default 'fr',
+  source text default 'join-form',
+  page_path text default '',
+  user_agent text default '',
+  created_at timestamptz not null default timezone('utc', now())
+);
+
+create index if not exists join_messages_created_at_idx
+  on public.join_messages (created_at desc);
+
+alter table public.join_messages enable row level security;
+
+drop policy if exists "Public can read join messages" on public.join_messages;
+create policy "Public can read join messages"
+on public.join_messages
+for select
+to anon
+using (true);
+
+drop policy if exists "Public can insert join messages" on public.join_messages;
+create policy "Public can insert join messages"
+on public.join_messages
+for insert
+to anon
+with check (true);
+
+alter table public.reservations
+  add column if not exists presence_status text not null default 'unknown';
+
+alter table public.reservations
+  add column if not exists presence_checked_at timestamptz;
+
+create index if not exists reservations_presence_status_idx
+  on public.reservations (presence_status);
+
+drop policy if exists "Public can update reservation attendance" on public.reservations;
+create policy "Public can update reservation attendance"
+on public.reservations
+for update
+to anon
+using (true)
+with check (true);
