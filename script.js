@@ -333,9 +333,124 @@ const page = document.body.dataset.page || "";
 const isPoemPage = page === "poem1" || page === "poem2";
 const langKey = "abir-al-horof-language";
 const gateKey = "abir-al-horof-language-gate";
+const visitStorageKey = "abir-al-horof-local-visits";
+const visitorStorageKey = "abir-al-horof-visitor-id";
+const visitTrackedFlag = "__abirVisitTracked";
+const trackingConfig = {
+  supabaseUrl: "https://afyginoozdcrvywakshj.supabase.co",
+  supabaseAnonKey: "sb_publishable_8kvL_h759FIOlE_y4qKyHw_zofghELR",
+  visitsTable: "site_visits"
+};
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let typingTimer = 0;
 let currentQuote = 0;
+
+function createVisitorId() {
+  if (window.crypto?.randomUUID) {
+    return window.crypto.randomUUID();
+  }
+  return `visitor-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function getVisitorId() {
+  try {
+    const existing = localStorage.getItem(visitorStorageKey);
+    if (existing) return existing;
+    const generated = createVisitorId();
+    localStorage.setItem(visitorStorageKey, generated);
+    return generated;
+  } catch (error) {
+    return createVisitorId();
+  }
+}
+
+function readLocalVisits() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(visitStorageKey) || "[]");
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function saveLocalVisit(visitPayload) {
+  try {
+    const visits = readLocalVisits();
+    visits.push({
+      ...visitPayload,
+      created_at: new Date().toISOString()
+    });
+    if (visits.length > 2000) {
+      visits.splice(0, visits.length - 2000);
+    }
+    localStorage.setItem(visitStorageKey, JSON.stringify(visits));
+  } catch (error) {
+    // Local fallback should stay silent to avoid breaking UI behavior.
+  }
+}
+
+async function trackSiteVisit() {
+  if (document.body?.dataset.adminPage === "true") return;
+  if (window[visitTrackedFlag]) return;
+  window[visitTrackedFlag] = true;
+
+  const visitPayload = {
+    visitor_key: getVisitorId(),
+    page_path: window.location.pathname || "unknown",
+    page_title: document.title || "Untitled",
+    language: document.documentElement.lang || "fr",
+    referrer: String(document.referrer || "").slice(0, 255),
+    user_agent: String(navigator.userAgent || "").slice(0, 255),
+    source: "website"
+  };
+
+  const { supabaseUrl, supabaseAnonKey, visitsTable } = trackingConfig;
+  if (!supabaseUrl || !supabaseAnonKey) {
+    saveLocalVisit(visitPayload);
+    return;
+  }
+
+  try {
+    const response = await fetch(`${supabaseUrl}/rest/v1/${visitsTable}`, {
+      method: "POST",
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal"
+      },
+      body: JSON.stringify([visitPayload]),
+      keepalive: true
+    });
+
+    if (!response.ok) {
+      throw new Error("visit tracking failed");
+    }
+  } catch (error) {
+    saveLocalVisit(visitPayload);
+  }
+}
+
+function setupHiddenAdminAccess() {
+  const openAdmin = () => {
+    window.location.href = "admin-portal.html";
+  };
+
+  const footerCredit = document.querySelector(".footer-credit");
+  if (footerCredit) {
+    footerCredit.addEventListener("click", (event) => {
+      event.preventDefault();
+      openAdmin();
+    });
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (!event.ctrlKey || !event.shiftKey) return;
+    if (event.key.toLowerCase() !== "a") return;
+    event.preventDefault();
+    openAdmin();
+  });
+}
 
 function pick(object, path) {
   return path.split(".").reduce((acc, key) => (acc ? acc[key] : undefined), object);
@@ -748,6 +863,7 @@ function initialize() {
   setActiveNavigation();
   setupNavigation();
   setupLanguageSwitch();
+  setupHiddenAdminAccess();
   setupGate();
   renderLogo();
   setupReveals();
@@ -755,6 +871,7 @@ function initialize() {
   setupForm();
   setupQuoteModal();
   typeHero();
+  trackSiteVisit();
 }
 
 initialize();

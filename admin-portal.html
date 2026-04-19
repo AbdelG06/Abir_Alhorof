@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Abir Al Horof</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Playfair+Display:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin-dashboard.css">
+</head>
+<body data-admin-page="true">
+  <main class="admin-app">
+    <section class="auth-shell" id="loginScreen">
+      <div class="auth-card">
+        <p class="auth-kicker">Abir Al Horof</p>
+        <h1>Admin Access</h1>
+        <p class="auth-copy">Connectez-vous pour gerer les statistiques du site et les inscriptions des soirees.</p>
+
+        <form id="adminLoginForm" class="auth-form" novalidate>
+          <label>
+            <span>Utilisateur</span>
+            <input type="text" id="adminUsername" autocomplete="username" required>
+          </label>
+          <label>
+            <span>Mot de passe</span>
+            <input type="password" id="adminPassword" autocomplete="current-password" required>
+          </label>
+          <button type="submit" class="btn btn-primary">Se connecter</button>
+          <p id="authFeedback" class="auth-feedback" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <section class="dashboard-shell hidden" id="dashboardScreen">
+      <header class="dashboard-header">
+        <div>
+          <p class="auth-kicker">Back office</p>
+          <h2>Dashboard admin</h2>
+          <p class="dashboard-subtitle">Suivi des visites et liste complete des inscrits.</p>
+        </div>
+        <div class="header-actions">
+          <button id="refreshData" class="btn btn-secondary" type="button">Actualiser</button>
+          <button id="logoutAdmin" class="btn btn-ghost" type="button">Deconnexion</button>
+        </div>
+      </header>
+
+      <p class="status-banner" id="dataSourceBanner" aria-live="polite"></p>
+
+      <section class="stats-grid" aria-label="Statistiques principales">
+        <article class="stat-card">
+          <p>Visites totales</p>
+          <strong id="totalVisits">0</strong>
+        </article>
+        <article class="stat-card">
+          <p>Visiteurs uniques</p>
+          <strong id="uniqueVisitors">0</strong>
+        </article>
+        <article class="stat-card">
+          <p>Visites aujourd'hui</p>
+          <strong id="todayVisits">0</strong>
+        </article>
+        <article class="stat-card">
+          <p>Inscriptions soirees</p>
+          <strong id="totalReservations">0</strong>
+        </article>
+      </section>
+
+      <section class="panels-grid">
+        <article class="panel">
+          <div class="panel-head">
+            <h3>Dernieres visites</h3>
+          </div>
+          <ul class="visit-feed" id="visitFeed"></ul>
+        </article>
+
+        <article class="panel wide">
+          <div class="panel-head">
+            <h3>Inscriptions</h3>
+            <div class="table-actions">
+              <input type="search" id="reservationSearch" placeholder="Rechercher (nom, email, telephone)">
+              <button id="exportCsv" class="btn btn-secondary" type="button">Exporter CSV</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nom</th>
+                  <th>Prenom</th>
+                  <th>Sexe</th>
+                  <th>Email</th>
+                  <th>Telephone</th>
+                  <th>Adresse</th>
+                  <th>Date inscription</th>
+                  <th>Langue</th>
+                </tr>
+              </thead>
+              <tbody id="reservationRows"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    window.ABIR_ADMIN_CONFIG = {
+      supabaseUrl: "https://afyginoozdcrvywakshj.supabase.co",
+      supabaseAnonKey: "sb_publishable_8kvL_h759FIOlE_y4qKyHw_zofghELR",
+      reservationsTable: "reservations",
+      visitsTable: "site_visits"
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="admin-dashboard.js"></script>
+</body>
+</html>
