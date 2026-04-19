@@ -425,20 +425,40 @@ async function generateReservationPdf(data) {
     return String(value).substring(0, 10);
   };
 
-  const normalizePdfText = (value, { uppercase = false } = {}) => {
-    const text = String(value || "").trim().replace(/\s+/g, " ");
-    return uppercase ? text.toUpperCase() : text;
+  const containsArabic = (value) => /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(String(value || ""));
+
+  const recoverArabicMojibake = (value) => {
+    const text = String(value || "");
+    if (!text || containsArabic(text)) return text;
+    if (!/[\u00C0-\u00FF]/.test(text)) return text;
+
+    const bytes = Array.from(text).map((char) => char.charCodeAt(0));
+    if (bytes.some((code) => code > 255)) return text;
+
+    try {
+      const decoded = new TextDecoder("utf-8").decode(new Uint8Array(bytes));
+      return containsArabic(decoded) ? decoded : text;
+    } catch (error) {
+      return text;
+    }
   };
 
-  const fitPdfText = (pdf, value, maxWidth, options = {}) => {
+  const normalizePdfText = (value, { uppercase = false, keepCaseForArabic = true } = {}) => {
+    const rawText = recoverArabicMojibake(value).trim().replace(/\s+/g, " ");
+    if (!rawText) return "";
+    if (keepCaseForArabic && containsArabic(rawText)) return rawText;
+    return uppercase ? rawText.toUpperCase() : rawText;
+  };
+
+  const fitCanvasText = (ctx, value, maxWidthPx, options = {}) => {
     const normalizedText = normalizePdfText(value, options);
     if (!normalizedText) return "";
-    if (pdf.getTextWidth(normalizedText) <= maxWidth) {
+    if (ctx.measureText(normalizedText).width <= maxWidthPx) {
       return normalizedText;
     }
 
     let shortenedText = normalizedText;
-    while (shortenedText.length > 1 && pdf.getTextWidth(`${shortenedText}...`) > maxWidth) {
+    while (shortenedText.length > 1 && ctx.measureText(`${shortenedText}...`).width > maxWidthPx) {
       shortenedText = shortenedText.slice(0, -1).trimEnd();
     }
 
@@ -452,52 +472,62 @@ async function generateReservationPdf(data) {
     
     img.onload = async () => {
       try {
-        // Create A4 PDF
-        const pdf = new jsPDF({
-          orientation: "portrait",
-          unit: "mm",
-          format: "a4"
-        });
-
-        // Convert image to data URL and add to PDF as background
         const canvas = document.createElement("canvas");
         canvas.width = img.width;
         canvas.height = img.height;
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0);
-        const imgData = canvas.toDataURL("image/png");
-        
-        // Add image to PDF (full page A4: 210x297mm)
-        pdf.addImage(imgData, "PNG", 0, 0, 210, 297);
-
-        // Set text properties
-        pdf.setFont("Arial", "normal");
-        pdf.setTextColor(44, 24, 16); // #2c1810
 
         // Coordonnees recalculees a partir du vrai template
         const fieldLayout = {
           nom: { x: 51.5, y: 198.8, maxWidth: 92, font: "bold", size: 11.5, uppercase: true },
           prenom: { x: 61, y: 208.4, maxWidth: 82, font: "bold", size: 11.2, uppercase: true },
-          date: { x: 84.2, y: 224.8, maxWidth: 48, font: "bold", size: 9.4, clearHeight: 4.2, clearOffsetY: 3.1 },
-          email: { x: 48.2, y: 233.3, maxWidth: 84, font: "normal", size: 8.6, clearHeight: 4.3, clearOffsetY: 3.1 },
-          phone: { x: 75.8, y: 241.8, maxWidth: 57, font: "bold", size: 9.0, clearHeight: 4.3, clearOffsetY: 3.1 },
-          address: { x: 55.2, y: 250.3, maxWidth: 78, font: "normal", size: 7.4, clearHeight: 4.0, clearOffsetY: 2.9 }
+          date: { x: 84.2, y: 224.8, maxWidth: 48, font: "bold", size: 9.4, uppercase: false },
+          email: { x: 48.2, y: 233.3, maxWidth: 84, font: "normal", size: 8.6, uppercase: false },
+          phone: { x: 75.8, y: 241.8, maxWidth: 57, font: "bold", size: 9.0, uppercase: false },
+          address: { x: 55.2, y: 250.3, maxWidth: 78, font: "normal", size: 7.4, uppercase: false }
         };
+
+        const mmToPxX = (mm) => (mm / 210) * canvas.width;
+        const mmToPxY = (mm) => (mm / 297) * canvas.height;
 
         const drawField = (key, value) => {
           const layout = fieldLayout[key];
-          const text = fitPdfText(pdf, value, layout.maxWidth, { uppercase: layout.uppercase });
-          pdf.setFont("Arial", layout.font);
-          pdf.setFontSize(layout.size);
-          pdf.text(text, layout.x, layout.y);
+          const hasArabic = containsArabic(value);
+          const sizePx = Math.max(10, (layout.size / 297) * canvas.height);
+          const weight = layout.font === "bold" ? "700" : "400";
+          const family = hasArabic ? '"Amiri", "Noto Naskh Arabic", Tahoma, serif' : '"Arial", sans-serif';
+          ctx.font = `${weight} ${sizePx}px ${family}`;
+          ctx.fillStyle = "#2c1810";
+          ctx.textBaseline = "alphabetic";
+          ctx.direction = hasArabic ? "rtl" : "ltr";
+          ctx.textAlign = hasArabic ? "right" : "left";
+
+          const maxWidthPx = mmToPxX(layout.maxWidth);
+          const text = fitCanvasText(ctx, value, maxWidthPx, {
+            uppercase: layout.uppercase,
+            keepCaseForArabic: true
+          });
+
+          const x = hasArabic ? mmToPxX(layout.x) + maxWidthPx : mmToPxX(layout.x);
+          const y = mmToPxY(layout.y);
+          ctx.fillText(text, x, y);
         };
 
         const drawCheckboxMark = (boxX, boxY, boxSize) => {
           const inset = 0.7;
-          pdf.setDrawColor(44, 24, 16);
-          pdf.setLineWidth(0.75);
-          pdf.line(boxX + inset, boxY + inset, boxX + boxSize - inset, boxY + boxSize - inset);
-          pdf.line(boxX + boxSize - inset, boxY + inset, boxX + inset, boxY + boxSize - inset);
+          const startX = mmToPxX(boxX + inset);
+          const startY = mmToPxY(boxY + inset);
+          const endX = mmToPxX(boxX + boxSize - inset);
+          const endY = mmToPxY(boxY + boxSize - inset);
+          ctx.strokeStyle = "#2c1810";
+          ctx.lineWidth = Math.max(1, (0.75 / 297) * canvas.height);
+          ctx.beginPath();
+          ctx.moveTo(startX, startY);
+          ctx.lineTo(endX, endY);
+          ctx.moveTo(endX, startY);
+          ctx.lineTo(startX, endY);
+          ctx.stroke();
         };
 
         drawField("nom", data.nom);
@@ -513,6 +543,14 @@ async function generateReservationPdf(data) {
         drawField("email", data.email);
         drawField("phone", data.phone);
         drawField("address", data.address);
+
+        const pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: "a4"
+        });
+        const finalImage = canvas.toDataURL("image/png");
+        pdf.addImage(finalImage, "PNG", 0, 0, 210, 297);
 
         const fileName = `reservation-${data.nom}-${data.prenom}.pdf`.replace(/\s+/g, "-").toLowerCase();
         const blob = pdf.output("blob");

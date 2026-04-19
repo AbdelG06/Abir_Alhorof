@@ -62,6 +62,16 @@
 
       <p class="admin-status-banner" id="dataSourceBanner" aria-live="polite"></p>
 
+      <section class="dashboard-toolbar" aria-label="Controles statistiques">
+        <p class="dashboard-toolbar-label">Fenetre analytics</p>
+        <div class="dashboard-period-buttons" id="dashboardPeriodButtons" role="group" aria-label="Choisir la periode">
+          <button class="period-btn active" data-period="7" type="button">7 jours</button>
+          <button class="period-btn" data-period="30" type="button">30 jours</button>
+          <button class="period-btn" data-period="90" type="button">90 jours</button>
+          <button class="period-btn" data-period="0" type="button">Tout</button>
+        </div>
+      </section>
+
       <section class="admin-stats-grid" aria-label="Statistiques dashboard">
         <article class="admin-stat-card">
           <p>Total inscrits</p>
@@ -146,6 +156,52 @@
 
         <article class="admin-panel full-width-panel">
           <div class="admin-panel-head">
+            <h2>Insights intelligents</h2>
+            <p class="panel-text" id="insightsWindowLabel">Analyse sur 7 jours.</p>
+          </div>
+          <div class="insights-grid" id="dashboardInsights"></div>
+        </article>
+
+        <article class="admin-panel full-width-panel">
+          <div class="admin-panel-head">
+            <h2>Pulse activite 14 jours</h2>
+            <p class="panel-text" id="activityWindowLabel">Inscriptions et visites jour par jour.</p>
+          </div>
+          <div class="activity-grid" id="activityTimeline"></div>
+        </article>
+
+        <article class="admin-panel full-width-panel">
+          <div class="admin-panel-head calendar-head">
+            <div>
+              <h2>Calendrier des stats</h2>
+              <p class="panel-text calendar-subtext">Visualisez les inscriptions et les visites jour par jour.</p>
+            </div>
+            <div class="calendar-controls">
+              <button id="calendarPrev" class="admin-btn admin-btn-secondary" type="button" aria-label="Mois precedent">&larr;</button>
+              <input type="month" id="calendarMonthPicker" aria-label="Choisir le mois des statistiques">
+              <button id="calendarNext" class="admin-btn admin-btn-secondary" type="button" aria-label="Mois suivant">&rarr;</button>
+            </div>
+          </div>
+          <p class="calendar-selection" id="calendarSelectionInfo">Selectionnez un jour pour voir le detail.</p>
+          <div class="calendar-weekdays" aria-hidden="true">
+            <span>Lun</span>
+            <span>Mar</span>
+            <span>Mer</span>
+            <span>Jeu</span>
+            <span>Ven</span>
+            <span>Sam</span>
+            <span>Dim</span>
+          </div>
+          <div class="calendar-grid" id="statsCalendar" role="grid" aria-label="Calendrier des statistiques"></div>
+          <p class="calendar-legend">
+            <span class="calendar-dot calendar-dot-low"></span> Faible activite
+            <span class="calendar-dot calendar-dot-medium"></span> Activite moyenne
+            <span class="calendar-dot calendar-dot-high"></span> Forte activite
+          </p>
+        </article>
+
+        <article class="admin-panel full-width-panel">
+          <div class="admin-panel-head">
             <h2>Messages Join</h2>
           </div>
           <p class="panel-text" id="formspreeMessagesStatus">Chargement des messages...</p>
@@ -162,7 +218,7 @@
       supabaseUrl: "https://afyginoozdcrvywakshj.supabase.co",
       supabaseAnonKey: "sb_publishable_8kvL_h759FIOlE_y4qKyHw_zofghELR",
       reservationsTable: "reservations",
-      visitsTable: "site_visits",
+      visitsTable: "site",
       joinMessagesTable: "join_messages",
       whatsappFallbackNumber: "212640215968"
     };

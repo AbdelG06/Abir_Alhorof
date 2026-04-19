@@ -43,7 +43,7 @@
           <div>
             <p class="panel-kicker">Back Office</p>
             <h1>Inscriptions Soiree</h1>
-            <p class="panel-subtitle">Liste complete des inscrits avec actions presence, WhatsApp et PDF.</p>
+            <p class="panel-subtitle">Liste complete des inscrits avec donnees utilisateur, actions presence, WhatsApp, PDF et suppression.</p>
             <p class="panel-meta" id="lastSync">Derniere synchro: --</p>
           </div>
         </div>
@@ -97,8 +97,6 @@
 
         <div class="inscriptions-toolbar">
           <input type="search" id="reservationSearch" placeholder="Rechercher nom, prenom, email, telephone...">
-          <input type="date" id="filterFrom" aria-label="Date debut">
-          <input type="date" id="filterTo" aria-label="Date fin">
           <button id="resetFilters" class="admin-btn admin-btn-secondary" type="button">Reset</button>
         </div>
 
@@ -108,12 +106,14 @@
               <tr>
                 <th>Nom</th>
                 <th>Prenom</th>
+                <th>Sexe</th>
                 <th>Telephone</th>
                 <th>Email</th>
+                <th>Adresse</th>
                 <th>Date inscription</th>
-                <th>Presence</th>
                 <th>WhatsApp</th>
                 <th>PDF</th>
+                <th>Suppression</th>
               </tr>
             </thead>
             <tbody id="reservationRows"></tbody>
@@ -130,7 +130,7 @@
       supabaseUrl: "https://afyginoozdcrvywakshj.supabase.co",
       supabaseAnonKey: "sb_publishable_8kvL_h759FIOlE_y4qKyHw_zofghELR",
       reservationsTable: "reservations",
-      visitsTable: "site_visits",
+      visitsTable: "site",
       whatsappFallbackNumber: "212640215968"
     };
   </script>

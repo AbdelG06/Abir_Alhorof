@@ -10,12 +10,16 @@
 
   const config = window.ABIR_ADMIN_CONFIG || {};
   const view = document.body.dataset.adminView || "dashboard";
+  const INSCRIPTIONS_COLUMN_COUNT = 11;
 
   const state = {
     reservations: [],
     filteredReservations: [],
     visits: [],
-    formMessages: []
+    formMessages: [],
+    calendarMonthKey: "",
+    selectedCalendarDateKey: "",
+    dashboardPeriodDays: 7
   };
 
   const ui = {
@@ -55,6 +59,16 @@
     genderBreakdown: document.getElementById("genderBreakdown"),
     formspreeMessages: document.getElementById("formspreeMessages"),
     formspreeMessagesStatus: document.getElementById("formspreeMessagesStatus"),
+    dashboardPeriodButtons: document.getElementById("dashboardPeriodButtons"),
+    dashboardInsights: document.getElementById("dashboardInsights"),
+    insightsWindowLabel: document.getElementById("insightsWindowLabel"),
+    activityTimeline: document.getElementById("activityTimeline"),
+    activityWindowLabel: document.getElementById("activityWindowLabel"),
+    statsCalendar: document.getElementById("statsCalendar"),
+    calendarMonthPicker: document.getElementById("calendarMonthPicker"),
+    calendarPrev: document.getElementById("calendarPrev"),
+    calendarNext: document.getElementById("calendarNext"),
+    calendarSelectionInfo: document.getElementById("calendarSelectionInfo"),
 
     reservationRows: document.getElementById("reservationRows"),
     toast: document.getElementById("adminToast")
@@ -164,12 +178,38 @@
   function genderDisplayLabel(value) {
     const normalized = String(value || "").toLowerCase();
     if (normalized.includes("female") || normalized.includes("femme") || normalized.includes("انث") || normalized.includes("امر")) {
-      return "v";
+      return "Femme";
     }
     if (normalized.includes("male") || normalized.includes("homme") || normalized.includes("رجل") || normalized.includes("ذكر")) {
-      return "رجل";
+      return "Homme";
     }
     return "Inconnu";
+  }
+
+  function participantGenderLabel(row) {
+    const rawGender = row.sexe_label || row.sexeLabel || row.sexe || "";
+    const normalized = String(rawGender).trim().toLowerCase();
+    if (normalized === "female") return "Femme";
+    if (normalized === "male") return "Homme";
+    return String(rawGender || "-");
+  }
+
+  function participantDateLabel(row) {
+    if (row.reserved_at) return String(row.reserved_at);
+    if (row.reservedAt) return String(row.reservedAt);
+    if (row.created_at) return String(row.created_at);
+    return "-";
+  }
+
+  function normalizePdfSex(value) {
+    const normalized = String(value || "").toLowerCase();
+    if (normalized.includes("female") || normalized.includes("femme") || normalized.includes("انث") || normalized.includes("امر")) {
+      return "female";
+    }
+    if (normalized.includes("male") || normalized.includes("homme") || normalized.includes("رجل") || normalized.includes("ذكر")) {
+      return "male";
+    }
+    return "";
   }
 
   function extractMessageText(submission) {
@@ -242,15 +282,27 @@
   }
 
   async function loadVisits() {
-    const table = config.visitsTable || "site_visits";
     const client = createSupabaseClient();
-    if (client) {
-      const { data, error } = await client.from(table).select("*").order("created_at", { ascending: false });
-      if (error) throw error;
-      return Array.isArray(data) ? data : [];
+    if (!client) {
+      return readLocalArray(VISITS_LOCAL_KEY);
     }
 
-    return readLocalArray(VISITS_LOCAL_KEY);
+    const tableCandidates = [...new Set([
+      config.visitsTable,
+      "site",
+      "site_visits"
+    ].filter(Boolean))];
+
+    const errors = [];
+    for (const table of tableCandidates) {
+      const { data, error } = await client.from(table).select("*").order("created_at", { ascending: false });
+      if (!error) {
+        return Array.isArray(data) ? data : [];
+      }
+      errors.push(`${table}: ${error.message || error}`);
+    }
+
+    throw new Error(errors.join(" | "));
   }
 
   async function loadFormspreeMessages() {
@@ -319,6 +371,291 @@
   function setLastSync() {
     if (!ui.lastSync) return;
     ui.lastSync.textContent = `Derniere synchro: ${formatDate(new Date())}`;
+  }
+
+  function periodLabel(days) {
+    if (!days) return "toute la periode";
+    return `${days} derniers jours`;
+  }
+
+  function periodStartDate(days) {
+    if (!days) return null;
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() - days + 1);
+    return start;
+  }
+
+  function filterByPeriod(items, dateExtractor, days) {
+    const start = periodStartDate(days);
+    if (!start) return [...items];
+    return items.filter((item) => {
+      const date = parseDate(dateExtractor(item));
+      if (!date) return false;
+      return date >= start;
+    });
+  }
+
+  function mapCountsByDate(items, dateExtractor) {
+    return items.reduce((acc, item) => {
+      const key = toDateKey(dateExtractor(item));
+      if (!key) return acc;
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+  }
+
+  function dateLabelFromKey(key) {
+    const date = parseDate(`${key}T00:00:00`);
+    if (!date) return key;
+    return date.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
+  }
+
+  function topEntryByCount(mapObject) {
+    const entries = Object.entries(mapObject);
+    if (!entries.length) {
+      return { key: "-", count: 0 };
+    }
+    const [key, count] = entries.sort((a, b) => b[1] - a[1])[0];
+    return { key, count };
+  }
+
+  function setActivePeriodButton() {
+    if (!ui.dashboardPeriodButtons) return;
+    const activeValue = String(state.dashboardPeriodDays);
+    ui.dashboardPeriodButtons.querySelectorAll(".period-btn").forEach((button) => {
+      button.classList.toggle("active", button.dataset.period === activeValue);
+    });
+  }
+
+  function renderDashboardInsights() {
+    if (view !== "dashboard" || !ui.dashboardInsights) return;
+
+    const days = state.dashboardPeriodDays;
+    const scopedReservations = filterByPeriod(state.reservations, reservationDate, days);
+    const scopedVisits = filterByPeriod(state.visits, (row) => row.created_at || row.createdAt, days);
+    const scopedMessages = filterByPeriod(state.formMessages, (row) => row.createdAt || row.created_at, days);
+
+    const scopedPresent = scopedReservations.filter((row) => row.presence_status === "present").length;
+    const scopedMarked = scopedReservations.filter((row) => row.presence_status === "present" || row.presence_status === "absent").length;
+    const scopedPresenceRate = scopedMarked > 0 ? Math.round((scopedPresent / scopedMarked) * 100) : 0;
+    const scopedUniqueVisitors = new Set(
+      scopedVisits.map((visit) => String(visit.visitor_key || "").trim()).filter(Boolean)
+    ).size;
+    const conversion = scopedVisits.length > 0 ? Math.round((scopedReservations.length / scopedVisits.length) * 100) : 0;
+
+    const reservationByDay = mapCountsByDate(scopedReservations, reservationDate);
+    const visitsByDay = mapCountsByDate(scopedVisits, (row) => row.created_at || row.createdAt);
+    const topReservationDay = topEntryByCount(reservationByDay);
+    const topVisitDay = topEntryByCount(visitsByDay);
+
+    const cards = [
+      { label: "Inscriptions periode", value: scopedReservations.length, detail: `${scopedPresent} present(s)` },
+      { label: "Visites periode", value: scopedVisits.length, detail: `${scopedUniqueVisitors} uniques` },
+      { label: "Messages Join", value: scopedMessages.length, detail: periodLabel(days) },
+      { label: "Taux presence", value: `${scopedPresenceRate}%`, detail: `${scopedMarked} marque(s)` },
+      { label: "Conversion", value: `${conversion}%`, detail: "inscriptions / visites" },
+      { label: "Pic inscriptions", value: topReservationDay.count, detail: topReservationDay.count ? dateLabelFromKey(topReservationDay.key) : "-" },
+      { label: "Pic visites", value: topVisitDay.count, detail: topVisitDay.count ? dateLabelFromKey(topVisitDay.key) : "-" }
+    ];
+
+    ui.dashboardInsights.innerHTML = cards
+      .map((card) => `
+        <article class="insight-card">
+          <p>${escapeHtml(card.label)}</p>
+          <strong>${escapeHtml(card.value)}</strong>
+          <span>${escapeHtml(card.detail)}</span>
+        </article>
+      `)
+      .join("");
+
+    if (ui.insightsWindowLabel) {
+      ui.insightsWindowLabel.textContent = `Analyse sur ${periodLabel(days)}.`;
+    }
+
+    setActivePeriodButton();
+  }
+
+  function renderActivityTimeline() {
+    if (view !== "dashboard" || !ui.activityTimeline) return;
+
+    const reservationsByDate = mapCountsByDate(state.reservations, reservationDate);
+    const visitsByDate = mapCountsByDate(state.visits, (row) => row.created_at || row.createdAt);
+
+    const days = [];
+    for (let offset = 13; offset >= 0; offset -= 1) {
+      const day = new Date();
+      day.setHours(0, 0, 0, 0);
+      day.setDate(day.getDate() - offset);
+      const key = toDateKey(day.toISOString());
+      const res = reservationsByDate[key] || 0;
+      const visits = visitsByDate[key] || 0;
+      days.push({ key, label: dateLabelFromKey(key), res, visits, total: res + visits });
+    }
+
+    const maxTotal = days.reduce((max, day) => Math.max(max, day.total), 0) || 1;
+
+    ui.activityTimeline.innerHTML = days
+      .map((day) => {
+        const resHeight = Math.max(8, Math.round((day.res / maxTotal) * 84));
+        const visitsHeight = Math.max(8, Math.round((day.visits / maxTotal) * 84));
+        return `
+          <article class="activity-day">
+            <p class="activity-day-label">${escapeHtml(day.label)}</p>
+            <div class="activity-bars">
+              <span class="activity-bar activity-bar-res" style="height:${resHeight}px"></span>
+              <span class="activity-bar activity-bar-visits" style="height:${visitsHeight}px"></span>
+            </div>
+            <p class="activity-day-meta">I ${day.res} / V ${day.visits}</p>
+          </article>
+        `;
+      })
+      .join("");
+
+    if (ui.activityWindowLabel) {
+      ui.activityWindowLabel.textContent = `Derniers 14 jours. Pic journalier: ${maxTotal} interaction(s).`;
+    }
+  }
+
+  function monthKeyFromDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    return `${year}-${month}`;
+  }
+
+  function parseMonthKey(value) {
+    const match = String(value || "").match(/^(\d{4})-(\d{2})$/);
+    if (!match) return null;
+    const date = new Date(Number(match[1]), Number(match[2]) - 1, 1);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  function shiftMonthKey(monthKey, delta) {
+    const sourceDate = parseMonthKey(monthKey) || new Date();
+    const shifted = new Date(sourceDate.getFullYear(), sourceDate.getMonth() + delta, 1);
+    return monthKeyFromDate(shifted);
+  }
+
+  function ensureCalendarState() {
+    if (!state.calendarMonthKey) {
+      state.calendarMonthKey = monthKeyFromDate(new Date());
+    }
+    if (!state.selectedCalendarDateKey) {
+      state.selectedCalendarDateKey = toDateKey(new Date().toISOString());
+    }
+  }
+
+  function buildDailyStatsMaps() {
+    const reservationsByDate = new Map();
+    const visitsByDate = new Map();
+    const uniqueVisitorsByDate = new Map();
+
+    state.reservations.forEach((row) => {
+      const key = toDateKey(reservationDate(row));
+      if (!key) return;
+      reservationsByDate.set(key, (reservationsByDate.get(key) || 0) + 1);
+    });
+
+    state.visits.forEach((row) => {
+      const key = toDateKey(row.created_at || row.createdAt);
+      if (!key) return;
+      visitsByDate.set(key, (visitsByDate.get(key) || 0) + 1);
+
+      const visitorKey = String(row.visitor_key || "").trim();
+      if (!visitorKey) return;
+      if (!uniqueVisitorsByDate.has(key)) {
+        uniqueVisitorsByDate.set(key, new Set());
+      }
+      uniqueVisitorsByDate.get(key).add(visitorKey);
+    });
+
+    return { reservationsByDate, visitsByDate, uniqueVisitorsByDate };
+  }
+
+  function renderStatsCalendar() {
+    if (view !== "dashboard" || !ui.statsCalendar) return;
+
+    ensureCalendarState();
+    const monthDate = parseMonthKey(state.calendarMonthKey) || new Date();
+    const monthKey = monthKeyFromDate(monthDate);
+    state.calendarMonthKey = monthKey;
+
+    if (ui.calendarMonthPicker) {
+      ui.calendarMonthPicker.value = monthKey;
+    }
+
+    const year = monthDate.getFullYear();
+    const month = monthDate.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
+
+    const { reservationsByDate, visitsByDate, uniqueVisitorsByDate } = buildDailyStatsMaps();
+
+    const monthResTotal = Array.from({ length: daysInMonth }, (_, index) => {
+      const day = String(index + 1).padStart(2, "0");
+      const dateKey = `${monthKey}-${day}`;
+      return reservationsByDate.get(dateKey) || 0;
+    }).reduce((sum, count) => sum + count, 0);
+
+    const monthVisitsTotal = Array.from({ length: daysInMonth }, (_, index) => {
+      const day = String(index + 1).padStart(2, "0");
+      const dateKey = `${monthKey}-${day}`;
+      return visitsByDate.get(dateKey) || 0;
+    }).reduce((sum, count) => sum + count, 0);
+
+    const maxTotal = Array.from({ length: daysInMonth }, (_, index) => {
+      const day = String(index + 1).padStart(2, "0");
+      const dateKey = `${monthKey}-${day}`;
+      return (reservationsByDate.get(dateKey) || 0) + (visitsByDate.get(dateKey) || 0);
+    }).reduce((max, value) => Math.max(max, value), 0);
+
+    const todayKey = toDateKey(new Date().toISOString());
+    const cells = [];
+
+    for (let i = 0; i < firstWeekday; i += 1) {
+      cells.push('<div class="calendar-empty-cell" aria-hidden="true"></div>');
+    }
+
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      const dayText = String(day).padStart(2, "0");
+      const dateKey = `${monthKey}-${dayText}`;
+      const reservationCount = reservationsByDate.get(dateKey) || 0;
+      const visitCount = visitsByDate.get(dateKey) || 0;
+      const combined = reservationCount + visitCount;
+      const intensity = maxTotal > 0 ? Math.min(4, Math.ceil((combined / maxTotal) * 4)) : 0;
+
+      const classes = ["calendar-day", `calendar-day-intensity-${intensity}`];
+      if (dateKey === todayKey) classes.push("calendar-day-today");
+      if (dateKey === state.selectedCalendarDateKey) classes.push("calendar-day-selected");
+
+      cells.push(`
+        <button class="${classes.join(" ")}" type="button" role="gridcell" data-date="${dateKey}" aria-label="${day}/${month + 1}/${year}: ${reservationCount} inscriptions, ${visitCount} visites">
+          <span class="calendar-day-number">${day}</span>
+          <span class="calendar-day-count calendar-day-res">I: ${reservationCount}</span>
+          <span class="calendar-day-count calendar-day-visits">V: ${visitCount}</span>
+        </button>
+      `);
+    }
+
+    ui.statsCalendar.innerHTML = cells.join("");
+
+    const currentMonthPrefix = `${monthKey}-`;
+    if (!state.selectedCalendarDateKey || !state.selectedCalendarDateKey.startsWith(currentMonthPrefix)) {
+      const todayInMonth = todayKey.startsWith(currentMonthPrefix);
+      state.selectedCalendarDateKey = todayInMonth ? todayKey : `${monthKey}-01`;
+    }
+
+    const selectedKey = state.selectedCalendarDateKey;
+    const selectedDate = parseDate(`${selectedKey}T00:00:00`);
+    const selectedRes = reservationsByDate.get(selectedKey) || 0;
+    const selectedVisits = visitsByDate.get(selectedKey) || 0;
+    const selectedUnique = uniqueVisitorsByDate.get(selectedKey)?.size || 0;
+
+    if (ui.calendarSelectionInfo) {
+      const monthLabel = monthDate.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+      const dateLabel = selectedDate ? selectedDate.toLocaleDateString("fr-FR") : selectedKey;
+      ui.calendarSelectionInfo.textContent = `${monthLabel} - total: ${monthResTotal} inscription(s), ${monthVisitsTotal} visite(s). Jour ${dateLabel}: ${selectedRes} inscription(s), ${selectedVisits} visite(s), ${selectedUnique} visiteur(s) unique(s).`;
+    }
   }
 
   function computeStats() {
@@ -489,7 +826,7 @@
 
     if (!rows.length) {
       const tr = document.createElement("tr");
-      tr.innerHTML = '<td class="empty-cell" colspan="8">Aucune inscription trouvee.</td>';
+      tr.innerHTML = `<td class="empty-cell" colspan="${INSCRIPTIONS_COLUMN_COUNT}">Aucune inscription trouvee.</td>`;
       ui.reservationRows.appendChild(tr);
       return;
     }
@@ -510,12 +847,15 @@
       tr.innerHTML = `
         <td data-label="Nom">${escapeHtml(row.nom || "-")}</td>
         <td data-label="Prenom">${escapeHtml(row.prenom || "-")}</td>
+        <td data-label="Sexe">${escapeHtml(participantGenderLabel(row))}</td>
         <td data-label="Telephone">${escapeHtml(row.phone || "-")}</td>
         <td data-label="Email">${escapeHtml(row.email || "-")}</td>
-        <td data-label="Date inscription">${escapeHtml(formatDate(reservationDate(row)))}</td>
+        <td data-label="Adresse">${escapeHtml(row.address || "-")}</td>
+        <td data-label="Date inscription">${escapeHtml(participantDateLabel(row))}</td>
         <td data-label="Presence">${presenceCell}</td>
         <td data-label="WhatsApp"><button class="mini-btn contact-btn" data-action="whatsapp" data-key="${escapeHtml(row.__key)}" type="button">Contacter</button></td>
         <td data-label="PDF"><button class="mini-btn" data-action="pdf" data-key="${escapeHtml(row.__key)}" type="button">Telecharger</button></td>
+        <td data-label="Suppression"><button class="mini-btn delete-btn" data-action="delete" data-key="${escapeHtml(row.__key)}" type="button">Supprimer</button></td>
       `;
 
       ui.reservationRows.appendChild(tr);
@@ -526,55 +866,188 @@
     return state.reservations.find((row) => row.__key === key) || null;
   }
 
-  function generateParticipantPdf(row) {
+  async function generateParticipantPdf(row) {
     if (!window.jspdf?.jsPDF) {
       showToast("Librairie PDF indisponible.", "error");
       return;
     }
 
     const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
 
-    pdf.setFillColor(248, 239, 227);
-    pdf.rect(0, 0, 210, 297, "F");
+    const formatPdfDate = (value) => {
+      if (!value) return "";
 
-    pdf.setTextColor(45, 26, 13);
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(20);
-    pdf.text("Abir Al Horof", 16, 24);
+      if (value instanceof Date && !Number.isNaN(value.getTime())) {
+        return value.toLocaleDateString("fr-FR");
+      }
 
-    pdf.setFontSize(12);
-    pdf.text("Fiche inscription participant", 16, 32);
-    pdf.setLineWidth(0.5);
-    pdf.line(16, 36, 194, 36);
+      if (typeof value === "string") {
+        const trimmedValue = value.trim();
+        const isoMatch = trimmedValue.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (isoMatch) {
+          return `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]}`;
+        }
 
-    const fields = [
-      ["Nom", row.nom],
-      ["Prenom", row.prenom],
-      ["Email", row.email],
-      ["Telephone", row.phone],
-      ["Presence", row.presence_status],
-      ["Date inscription", formatDate(reservationDate(row))],
-      ["Adresse", row.address || "-"]
-    ];
+        const dateMatch = trimmedValue.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+        if (dateMatch) {
+          return `${dateMatch[1].padStart(2, "0")}/${dateMatch[2].padStart(2, "0")}/${dateMatch[3]}`;
+        }
 
-    let y = 48;
-    fields.forEach(([label, value]) => {
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(11);
-      pdf.text(`${label}:`, 18, y);
-      pdf.setFont("helvetica", "normal");
-      const lines = pdf.splitTextToSize(String(value || "-"), 120);
-      pdf.text(lines, 64, y);
-      y += Math.max(8, lines.length * 6);
+        const parsedDate = new Date(trimmedValue);
+        if (!Number.isNaN(parsedDate.getTime())) {
+          return parsedDate.toLocaleDateString("fr-FR");
+        }
+      }
+
+      return String(value).substring(0, 10);
+    };
+
+    const containsArabic = (value) => /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(String(value || ""));
+
+    const recoverArabicMojibake = (value) => {
+      const text = String(value || "");
+      if (!text || containsArabic(text)) return text;
+      if (!/[\u00C0-\u00FF]/.test(text)) return text;
+
+      const bytes = Array.from(text).map((char) => char.charCodeAt(0));
+      if (bytes.some((code) => code > 255)) return text;
+
+      try {
+        const decoded = new TextDecoder("utf-8").decode(new Uint8Array(bytes));
+        return containsArabic(decoded) ? decoded : text;
+      } catch (error) {
+        return text;
+      }
+    };
+
+    const normalizePdfText = (value, { uppercase = false, keepCaseForArabic = true } = {}) => {
+      const rawText = recoverArabicMojibake(value).trim().replace(/\s+/g, " ");
+      if (!rawText) return "";
+      if (keepCaseForArabic && containsArabic(rawText)) return rawText;
+      return uppercase ? rawText.toUpperCase() : rawText;
+    };
+
+    const fitCanvasText = (ctx, value, maxWidthPx, options = {}) => {
+      const normalizedText = normalizePdfText(value, options);
+      if (!normalizedText) return "";
+      if (ctx.measureText(normalizedText).width <= maxWidthPx) {
+        return normalizedText;
+      }
+
+      let shortenedText = normalizedText;
+      while (shortenedText.length > 1 && ctx.measureText(`${shortenedText}...`).width > maxWidthPx) {
+        shortenedText = shortenedText.slice(0, -1).trimEnd();
+      }
+
+      return shortenedText ? `${shortenedText}...` : "";
+    };
+
+    await new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+
+      img.onload = () => {
+        try {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+
+          const fieldLayout = {
+            nom: { x: 51.5, y: 198.8, maxWidth: 92, font: "bold", size: 11.5, uppercase: true },
+            prenom: { x: 61, y: 208.4, maxWidth: 82, font: "bold", size: 11.2, uppercase: true },
+            date: { x: 84.2, y: 224.8, maxWidth: 48, font: "bold", size: 9.4 },
+            email: { x: 48.2, y: 233.3, maxWidth: 84, font: "normal", size: 8.6 },
+            phone: { x: 75.8, y: 241.8, maxWidth: 57, font: "bold", size: 9.0 },
+            address: { x: 55.2, y: 250.3, maxWidth: 78, font: "normal", size: 7.4 }
+          };
+
+          const mmToPxX = (mm) => (mm / 210) * canvas.width;
+          const mmToPxY = (mm) => (mm / 297) * canvas.height;
+
+          const drawField = (key, value) => {
+            const layout = fieldLayout[key];
+            const hasArabic = containsArabic(value);
+            const sizePx = Math.max(10, (layout.size / 297) * canvas.height);
+            const weight = layout.font === "bold" ? "700" : "400";
+            const family = hasArabic ? '"Amiri", "Noto Naskh Arabic", Tahoma, serif' : '"Arial", sans-serif';
+            ctx.font = `${weight} ${sizePx}px ${family}`;
+            ctx.fillStyle = "#2c1810";
+            ctx.textBaseline = "alphabetic";
+            ctx.direction = hasArabic ? "rtl" : "ltr";
+            ctx.textAlign = hasArabic ? "right" : "left";
+
+            const maxWidthPx = mmToPxX(layout.maxWidth);
+            const text = fitCanvasText(ctx, value, maxWidthPx, {
+              uppercase: layout.uppercase,
+              keepCaseForArabic: true
+            });
+
+            const x = hasArabic ? mmToPxX(layout.x) + maxWidthPx : mmToPxX(layout.x);
+            const y = mmToPxY(layout.y);
+            ctx.fillText(text, x, y);
+          };
+
+          const drawCheckboxMark = (boxX, boxY, boxSize) => {
+            const inset = 0.7;
+            const startX = mmToPxX(boxX + inset);
+            const startY = mmToPxY(boxY + inset);
+            const endX = mmToPxX(boxX + boxSize - inset);
+            const endY = mmToPxY(boxY + boxSize - inset);
+            ctx.strokeStyle = "#2c1810";
+            ctx.lineWidth = Math.max(1, (0.75 / 297) * canvas.height);
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.moveTo(endX, startY);
+            ctx.lineTo(startX, endY);
+            ctx.stroke();
+          };
+
+          drawField("nom", row.nom);
+          drawField("prenom", row.prenom);
+
+          const pdfSex = normalizePdfSex(row.sexe || row.sexe_label || row.sexeLabel);
+          if (pdfSex === "male") {
+            drawCheckboxMark(47.95, 212.85, 4.95);
+          } else if (pdfSex === "female") {
+            drawCheckboxMark(71.2, 212.85, 4.7);
+          }
+
+          drawField("date", formatPdfDate(reservationDate(row)));
+          drawField("email", row.email);
+          drawField("phone", row.phone);
+          drawField("address", row.address);
+
+          const pdf = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: "a4"
+          });
+          const finalImage = canvas.toDataURL("image/png");
+          pdf.addImage(finalImage, "PNG", 0, 0, 210, 297);
+
+          const fileName = `reservation-${String(row.nom || "").trim()}-${String(row.prenom || "").trim()}`
+            .replace(/\s+/g, "-")
+            .toLowerCase();
+          pdf.save(`${fileName || "reservation"}.pdf`);
+          showToast("PDF telecharge.", "success");
+          resolve();
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      img.onerror = () => {
+        reject(new Error("Template PDF introuvable: src/image/affichepdf.png"));
+      };
+
+      img.src = "src/image/affichepdf.png";
+    }).catch((error) => {
+      showToast("Erreur generation PDF.", "error");
+      console.error(error);
     });
-
-    pdf.setFontSize(9);
-    pdf.text(`Genere le ${formatDate(new Date())}`, 16, 286);
-
-    const filename = `inscrit-${String(row.nom || "").trim()}-${String(row.prenom || "").trim()}`.replace(/\s+/g, "-").toLowerCase();
-    pdf.save(`${filename || "participant"}.pdf`);
-    showToast("PDF telecharge.", "success");
   }
 
   function contactViaWhatsapp(row) {
@@ -606,6 +1079,67 @@
     return { ok: true };
   }
 
+  function deleteReservationLocal(row) {
+    const current = readLocalArray(RESERVATION_LOCAL_KEY);
+    const next = current.filter((item) => {
+      const sameEmail = String(item.email || "") === String(row.email || "");
+      const samePhone = String(item.phone || "") === String(row.phone || "");
+      const sameNom = String(item.nom || "") === String(row.nom || "");
+      const samePrenom = String(item.prenom || "") === String(row.prenom || "");
+      const sameReserved = String(item.reserved_at || item.reservedAt || "") === String(row.reserved_at || row.reservedAt || "");
+      return !(sameEmail && samePhone && sameNom && samePrenom && sameReserved);
+    });
+    localStorage.setItem(RESERVATION_LOCAL_KEY, JSON.stringify(next));
+  }
+
+  function clearPresenceOverride(row) {
+    const overrides = readLocalObject(PRESENCE_OVERRIDES_KEY);
+    if (overrides[row.__key]) {
+      delete overrides[row.__key];
+      writeLocalObject(PRESENCE_OVERRIDES_KEY, overrides);
+    }
+  }
+
+  async function deleteParticipantRemote(row) {
+    const client = createSupabaseClient();
+    const table = config.reservationsTable || "reservations";
+    if (!client || !row.id) {
+      return { ok: false, reason: "fallback" };
+    }
+
+    const { error } = await client.from(table).delete().eq("id", row.id);
+    if (error) {
+      return { ok: false, reason: error.message || "delete_failed" };
+    }
+    return { ok: true };
+  }
+
+  async function handleDelete(row) {
+    const confirmed = window.confirm(`Supprimer l'inscription de ${row.prenom || ""} ${row.nom || ""} ?`);
+    if (!confirmed) return;
+
+    const deleteResult = await deleteParticipantRemote(row);
+    if (!deleteResult.ok && deleteResult.reason !== "fallback") {
+      showToast("Suppression impossible sur Supabase. Verifiez la policy DELETE.", "error");
+      return;
+    }
+
+    if (deleteResult.reason === "fallback") {
+      deleteReservationLocal(row);
+    }
+
+    clearPresenceOverride(row);
+    state.reservations = state.reservations.filter((entry) => entry.__key !== row.__key);
+    applyFilters();
+    renderRows();
+    computeStats();
+    renderDashboardPanels();
+    renderDashboardInsights();
+    renderActivityTimeline();
+    renderStatsCalendar();
+    showToast("Inscription supprimee.", "success");
+  }
+
   async function handlePresence(row, status) {
     row.presence_status = status;
     row.presence_checked_at = new Date().toISOString();
@@ -614,6 +1148,7 @@
     applyFilters();
     renderRows();
     computeStats();
+    renderDashboardInsights();
 
     const updateResult = await updatePresenceRemote(row, status);
     if (!updateResult.ok && updateResult.reason !== "fallback") {
@@ -635,7 +1170,7 @@
     }
 
     if (button.dataset.action === "pdf") {
-      generateParticipantPdf(row);
+      await generateParticipantPdf(row);
       return;
     }
     if (button.dataset.action === "whatsapp") {
@@ -648,6 +1183,10 @@
     }
     if (button.dataset.action === "absent") {
       await handlePresence(row, "absent");
+      return;
+    }
+    if (button.dataset.action === "delete") {
+      await handleDelete(row);
     }
   }
 
@@ -658,13 +1197,15 @@
       return;
     }
 
-    const header = ["Nom", "Prenom", "Telephone", "Email", "Date inscription", "Presence", "Langue"];
+    const header = ["Nom", "Prenom", "Sexe", "Telephone", "Email", "Adresse", "Date inscription", "Presence", "Langue"];
     const lines = rows.map((row) => [
       row.nom,
       row.prenom,
+      participantGenderLabel(row),
       row.phone,
       row.email,
-      formatDate(reservationDate(row)),
+      row.address || "",
+      participantDateLabel(row),
       row.presence_status,
       row.language || "fr"
     ]);
@@ -725,6 +1266,9 @@
     applyFilters();
     computeStats();
     renderDashboardPanels();
+    renderDashboardInsights();
+    renderActivityTimeline();
+    renderStatsCalendar();
     renderFormspreeMessages();
     renderRows();
     setLastSync();
@@ -812,6 +1356,43 @@
       applyFilters();
       renderRows();
       computeStats();
+    });
+
+    ui.calendarMonthPicker?.addEventListener("change", () => {
+      const nextKey = String(ui.calendarMonthPicker?.value || "");
+      if (!parseMonthKey(nextKey)) return;
+      state.calendarMonthKey = nextKey;
+      state.selectedCalendarDateKey = "";
+      renderStatsCalendar();
+    });
+
+    ui.calendarPrev?.addEventListener("click", () => {
+      state.calendarMonthKey = shiftMonthKey(state.calendarMonthKey, -1);
+      state.selectedCalendarDateKey = "";
+      renderStatsCalendar();
+    });
+
+    ui.calendarNext?.addEventListener("click", () => {
+      state.calendarMonthKey = shiftMonthKey(state.calendarMonthKey, 1);
+      state.selectedCalendarDateKey = "";
+      renderStatsCalendar();
+    });
+
+    ui.statsCalendar?.addEventListener("click", (event) => {
+      const trigger = event.target.closest("button[data-date]");
+      if (!trigger) return;
+      state.selectedCalendarDateKey = trigger.dataset.date || "";
+      renderStatsCalendar();
+    });
+
+    ui.dashboardPeriodButtons?.addEventListener("click", (event) => {
+      const trigger = event.target.closest("button[data-period]");
+      if (!trigger) return;
+      const parsed = Number(trigger.dataset.period);
+      if (Number.isNaN(parsed)) return;
+      state.dashboardPeriodDays = parsed;
+      renderDashboardInsights();
+      renderActivityTimeline();
     });
 
     ui.reservationRows?.addEventListener("click", (event) => {

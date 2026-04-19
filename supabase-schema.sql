@@ -37,6 +37,69 @@ for insert
 to anon
 with check (true);
 
+create table if not exists public.site (
+  id uuid primary key default gen_random_uuid(),
+  visitor_key text not null,
+  page_path text not null,
+  page_title text not null,
+  language text not null default 'fr',
+  referrer text default '',
+  user_agent text default '',
+  source text default 'website',
+  created_at timestamptz not null default timezone('utc', now())
+);
+
+create index if not exists site_created_at_idx
+  on public.site (created_at desc);
+
+create index if not exists site_visitor_key_idx
+  on public.site (visitor_key);
+
+alter table public.site enable row level security;
+
+drop policy if exists "Public can read site visits (site)" on public.site;
+create policy "Public can read site visits (site)"
+on public.site
+for select
+to anon
+using (true);
+
+drop policy if exists "Public can insert site visits (site)" on public.site;
+create policy "Public can insert site visits (site)"
+on public.site
+for insert
+to anon
+with check (true);
+
+do $$
+begin
+  if to_regclass('public.site_visits') is not null then
+    insert into public.site (
+      id,
+      visitor_key,
+      page_path,
+      page_title,
+      language,
+      referrer,
+      user_agent,
+      source,
+      created_at
+    )
+    select
+      id,
+      visitor_key,
+      page_path,
+      page_title,
+      language,
+      referrer,
+      user_agent,
+      source,
+      created_at
+    from public.site_visits
+    on conflict (id) do nothing;
+  end if;
+end $$;
+
 create table if not exists public.site_visits (
   id uuid primary key default gen_random_uuid(),
   visitor_key text not null,

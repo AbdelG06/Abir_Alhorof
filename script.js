@@ -340,7 +340,7 @@ const visitTrackedFlag = "__abirVisitTracked";
 const trackingConfig = {
   supabaseUrl: "https://afyginoozdcrvywakshj.supabase.co",
   supabaseAnonKey: "sb_publishable_8kvL_h759FIOlE_y4qKyHw_zofghELR",
-  visitsTable: "site_visits",
+  visitsTable: "site",
   joinMessagesTable: "join_messages"
 };
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -413,19 +413,29 @@ async function trackSiteVisit() {
   }
 
   try {
-    const response = await fetch(`${supabaseUrl}/rest/v1/${visitsTable}`, {
-      method: "POST",
-      headers: {
-        apikey: supabaseAnonKey,
-        Authorization: `Bearer ${supabaseAnonKey}`,
-        "Content-Type": "application/json",
-        Prefer: "return=minimal"
-      },
-      body: JSON.stringify([visitPayload]),
-      keepalive: true
-    });
+    const tables = [...new Set([visitsTable, "site", "site_visits"].filter(Boolean))];
+    let inserted = false;
 
-    if (!response.ok) {
+    for (const table of tables) {
+      const response = await fetch(`${supabaseUrl}/rest/v1/${table}`, {
+        method: "POST",
+        headers: {
+          apikey: supabaseAnonKey,
+          Authorization: `Bearer ${supabaseAnonKey}`,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal"
+        },
+        body: JSON.stringify([visitPayload]),
+        keepalive: true
+      });
+
+      if (response.ok) {
+        inserted = true;
+        break;
+      }
+    }
+
+    if (!inserted) {
       throw new Error("visit tracking failed");
     }
   } catch (error) {
