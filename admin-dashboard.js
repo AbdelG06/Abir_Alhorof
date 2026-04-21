@@ -10,7 +10,7 @@
 
   const config = window.ABIR_ADMIN_CONFIG || {};
   const view = document.body.dataset.adminView || "dashboard";
-  const INSCRIPTIONS_COLUMN_COUNT = 11;
+  const INSCRIPTIONS_COLUMN_COUNT = 13;
 
   const state = {
     reservations: [],
@@ -19,7 +19,8 @@
     formMessages: [],
     calendarMonthKey: "",
     selectedCalendarDateKey: "",
-    dashboardPeriodDays: 7
+    dashboardPeriodDays: 7,
+    inscriptionMessageRecipient: null
   };
 
   const ui = {
@@ -44,6 +45,7 @@
     cancelAddUser: document.getElementById("cancelAddUser"),
     addUserFeedback: document.getElementById("addUserFeedback"),
     resetFilters: document.getElementById("resetFilters"),
+    sendInscriptionTemplateWhatsapp: document.getElementById("sendInscriptionTemplateWhatsapp"),
 
     dataSourceBanner: document.getElementById("dataSourceBanner"),
     lastSync: document.getElementById("lastSync"),
@@ -74,6 +76,13 @@
     calendarPrev: document.getElementById("calendarPrev"),
     calendarNext: document.getElementById("calendarNext"),
     calendarSelectionInfo: document.getElementById("calendarSelectionInfo"),
+
+    whatsappMessageModal: document.getElementById("whatsappMessageModal"),
+    whatsappMessageRecipient: document.getElementById("whatsappMessageRecipient"),
+    whatsappMessageText: document.getElementById("whatsappMessageText"),
+    sendWhatsAppMessage: document.getElementById("sendWhatsAppMessage"),
+    closeWhatsAppMessage: document.getElementById("closeWhatsAppMessage"),
+    cancelWhatsAppMessage: document.getElementById("cancelWhatsAppMessage"),
 
     reservationRows: document.getElementById("reservationRows"),
     toast: document.getElementById("adminToast")
@@ -123,7 +132,7 @@
   }
 
   function setButtonsDisabled(disabled) {
-    [ui.refreshButton, ui.exportButton, ui.toggleAddUserForm].forEach((button) => {
+    [ui.refreshButton, ui.exportButton, ui.toggleAddUserForm, ui.sendInscriptionTemplateWhatsapp].forEach((button) => {
       if (button) button.disabled = disabled;
     });
 
@@ -1110,6 +1119,8 @@
         <td data-label="Date inscription">${escapeHtml(participantDateLabel(row))}</td>
         <td data-label="Presence">${presenceCell}</td>
         <td data-label="WhatsApp"><button class="mini-btn contact-btn" data-action="whatsapp" data-key="${escapeHtml(row.__key)}" type="button">Contacter</button></td>
+        <td data-label="Message inscription"><button class="mini-btn template-btn" data-action="inscription-message" data-key="${escapeHtml(row.__key)}" type="button">Generer</button></td>
+        <td data-label="Notifier"><button class="mini-btn notify-btn" data-action="notify" data-key="${escapeHtml(row.__key)}" type="button">Notifier</button></td>
         <td data-label="PDF"><button class="mini-btn" data-action="pdf" data-key="${escapeHtml(row.__key)}" type="button">Telecharger</button></td>
         <td data-label="Suppression"><button class="mini-btn delete-btn" data-action="delete" data-key="${escapeHtml(row.__key)}" type="button">Supprimer</button></td>
       `;
@@ -1323,6 +1334,133 @@
     window.open(`https://wa.me/${destination}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
   }
 
+  function buildInscriptionMessage(row) {
+    const fullName = `${String(row.prenom || "").trim()} ${String(row.nom || "").trim()}`.trim() || "Participant";
+    const gender = participantGenderLabel(row);
+    const dateInscription = participantDateLabel(row);
+    const eventName = String(row.event_name || row.eventName || "Soiree Abir Al Horof").trim();
+
+    return [
+      `Bonjour ${fullName},`,
+      "",
+      "Voici le recapitulatif de votre inscription :",
+      `- Nom complet : ${fullName}`,
+      `- Sexe : ${gender || "-"}`,
+      `- Telephone : ${row.phone || "-"}`,
+      `- Email : ${row.email || "-"}`,
+      `- Adresse : ${row.address || "-"}`,
+      `- Date d'inscription : ${dateInscription}`,
+      `- Evenement : ${eventName}`,
+      "",
+      "Merci et a tres bientot.",
+      "Equipe Abir Al Horof"
+    ].join("\n");
+  }
+
+  function closeInscriptionMessageModal() {
+    if (!ui.whatsappMessageModal) return;
+    state.inscriptionMessageRecipient = null;
+    ui.whatsappMessageModal.classList.add("hidden");
+    ui.whatsappMessageModal.setAttribute("aria-hidden", "true");
+    if (ui.whatsappMessageRecipient) {
+      ui.whatsappMessageRecipient.textContent = "";
+    }
+  }
+
+  function openInscriptionMessageModal(row) {
+    if (!ui.whatsappMessageModal || !ui.whatsappMessageText) return;
+    state.inscriptionMessageRecipient = row;
+    ui.whatsappMessageText.value = buildInscriptionMessage(row);
+
+    const fullName = `${String(row.prenom || "").trim()} ${String(row.nom || "").trim()}`.trim() || "Participant";
+    const destination = normalizePhone(row.phone) || config.whatsappFallbackNumber || "";
+    if (ui.whatsappMessageRecipient) {
+      ui.whatsappMessageRecipient.textContent = destination
+        ? `Destinataire: ${fullName} (${destination})`
+        : `Destinataire: ${fullName} (numero non disponible)`;
+    }
+
+    ui.whatsappMessageModal.classList.remove("hidden");
+    ui.whatsappMessageModal.setAttribute("aria-hidden", "false");
+    ui.whatsappMessageText.focus();
+  }
+
+  function sendInscriptionMessageToWhatsapp() {
+    if (!ui.whatsappMessageText) return;
+    const recipient = state.inscriptionMessageRecipient;
+    if (!recipient) {
+      showToast("Aucun destinataire selectionne.", "error");
+      return;
+    }
+
+    const message = String(ui.whatsappMessageText.value || "").trim();
+    if (!message) {
+      showToast("Le message est vide.", "error");
+      return;
+    }
+
+    const destination = normalizePhone(recipient.phone) || config.whatsappFallbackNumber || "";
+    if (!destination) {
+      showToast("Aucun numero WhatsApp disponible.", "error");
+      return;
+    }
+
+    const whatsappUrl = `https://wa.me/${destination}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank", "noopener");
+    closeInscriptionMessageModal();
+  }
+
+  function buildInscriptionRequestTemplateMessage() {
+    return [
+      "Salut, pour vous inscrire veuillez donner vos informations :",
+      "- Nom :",
+      "- Prenom :",
+      "- Sexe :",
+      "- Telephone :",
+      "- Email :",
+      "- Adresse :",
+      "",
+      "Des reception de vos infos, nous finalisons votre inscription.",
+      "Equipe Abir Al Horof"
+    ].join("\n");
+  }
+
+  function openInscriptionRequestTemplateWhatsapp() {
+    const destination = normalizePhone(config.whatsappFallbackNumber || "");
+    const message = buildInscriptionRequestTemplateMessage();
+    const whatsappUrl = destination
+      ? `https://wa.me/${destination}?text=${encodeURIComponent(message)}`
+      : `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+    window.open(whatsappUrl, "_blank", "noopener");
+    showToast("Modele WhatsApp pret a envoyer.", "success");
+  }
+
+  function buildValidationNotificationMessage(row) {
+    const fullName = `${String(row.prenom || "").trim()} ${String(row.nom || "").trim()}`.trim() || "Participant";
+    return [
+      `Bonjour ${fullName},`,
+      "",
+      "Votre inscription a Abir Al Horof est bien validee.",
+      "Si vous n'avez pas recu le PDF d'inscription, dites-le nous sur ce numero et nous vous l'enverrons.",
+      "",
+      "Merci et a tres bientot.",
+      "Equipe Abir Al Horof"
+    ].join("\n");
+  }
+
+  function notifyParticipantViaWhatsapp(row) {
+    const destination = normalizePhone(row.phone) || config.whatsappFallbackNumber || "";
+    if (!destination) {
+      showToast("Aucun numero WhatsApp disponible.", "error");
+      return;
+    }
+
+    const text = buildValidationNotificationMessage(row);
+    window.open(`https://wa.me/${destination}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+    showToast("Message de validation pret a envoyer.", "success");
+  }
+
   async function updatePresenceRemote(row, status) {
     const client = createSupabaseClient();
     const table = config.reservationsTable || "reservations";
@@ -1438,6 +1576,14 @@
     }
     if (button.dataset.action === "whatsapp") {
       contactViaWhatsapp(row);
+      return;
+    }
+    if (button.dataset.action === "inscription-message") {
+      openInscriptionMessageModal(row);
+      return;
+    }
+    if (button.dataset.action === "notify") {
+      notifyParticipantViaWhatsapp(row);
       return;
     }
     if (button.dataset.action === "present") {
@@ -1625,6 +1771,10 @@
       toggleAddUserPanel();
     });
 
+    ui.sendInscriptionTemplateWhatsapp?.addEventListener("click", () => {
+      openInscriptionRequestTemplateWhatsapp();
+    });
+
     ui.cancelAddUser?.addEventListener("click", () => {
       closeAddUserPanel({ reset: true });
     });
@@ -1672,6 +1822,30 @@
 
     ui.reservationRows?.addEventListener("click", (event) => {
       handleRowsClick(event);
+    });
+
+    ui.sendWhatsAppMessage?.addEventListener("click", () => {
+      sendInscriptionMessageToWhatsapp();
+    });
+
+    ui.closeWhatsAppMessage?.addEventListener("click", () => {
+      closeInscriptionMessageModal();
+    });
+
+    ui.cancelWhatsAppMessage?.addEventListener("click", () => {
+      closeInscriptionMessageModal();
+    });
+
+    ui.whatsappMessageModal?.addEventListener("click", (event) => {
+      if (event.target === ui.whatsappMessageModal) {
+        closeInscriptionMessageModal();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeInscriptionMessageModal();
+      }
     });
 
     ui.togglePassword?.addEventListener("click", () => {

@@ -99,6 +99,7 @@
           <input type="search" id="reservationSearch" placeholder="Rechercher nom, prenom, email, telephone...">
           <button id="toggleAddUserForm" class="admin-btn admin-btn-secondary" type="button">Ajouter user</button>
           <button id="resetFilters" class="admin-btn admin-btn-secondary" type="button">Reset</button>
+          <button id="sendInscriptionTemplateWhatsapp" class="admin-btn admin-btn-secondary" type="button">Template WhatsApp</button>
         </div>
 
         <section class="add-user-panel hidden" id="addUserPanel" aria-label="Ajout manuel utilisateur">
@@ -164,6 +165,8 @@
                 <th>Date inscription</th>
                 <th>Presence</th>
                 <th>WhatsApp</th>
+                <th>Message inscription</th>
+                <th>Notifier</th>
                 <th>PDF</th>
                 <th>Suppression</th>
               </tr>
@@ -174,6 +177,23 @@
       </section>
     </section>
   </main>
+
+  <section class="wa-message-modal hidden" id="whatsappMessageModal" aria-hidden="true" aria-label="Message inscription WhatsApp">
+    <div class="wa-message-card" role="dialog" aria-modal="true" aria-labelledby="waMessageTitle">
+      <div class="wa-message-head">
+        <h2 id="waMessageTitle">Message d'inscription</h2>
+        <button type="button" class="admin-btn admin-btn-ghost" id="closeWhatsAppMessage">Fermer</button>
+      </div>
+      <p class="panel-text">Le message est genere automatiquement. Vous pouvez le modifier avant envoi.</p>
+      <p class="panel-text" id="whatsappMessageRecipient" aria-live="polite"></p>
+      <label class="wa-message-field" for="whatsappMessageText">Message a envoyer</label>
+      <textarea id="whatsappMessageText" rows="10" spellcheck="false"></textarea>
+      <div class="wa-message-actions">
+        <button type="button" class="admin-btn admin-btn-primary" id="sendWhatsAppMessage">Envoyer via WhatsApp</button>
+        <button type="button" class="admin-btn admin-btn-secondary" id="cancelWhatsAppMessage">Annuler</button>
+      </div>
+    </div>
+  </section>
 
   <div class="admin-toast" id="adminToast" hidden></div>
 

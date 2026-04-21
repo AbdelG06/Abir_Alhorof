@@ -616,6 +616,16 @@ p {
   border-color: rgba(141, 218, 166, 0.4);
 }
 
+.template-btn {
+  background: rgba(243, 195, 123, 0.14);
+  border-color: rgba(243, 195, 123, 0.45);
+}
+
+.notify-btn {
+  background: rgba(121, 205, 246, 0.14);
+  border-color: rgba(121, 205, 246, 0.45);
+}
+
 .delete-btn {
   background: rgba(241, 154, 136, 0.15);
   border-color: rgba(241, 154, 136, 0.5);
@@ -888,6 +898,69 @@ p {
   border-color: rgba(241, 154, 136, 0.55);
 }
 
+.wa-message-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  padding: 16px;
+  display: grid;
+  place-items: center;
+  background: rgba(11, 7, 4, 0.72);
+  backdrop-filter: blur(3px);
+}
+
+.wa-message-card {
+  width: min(760px, 100%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: linear-gradient(150deg, rgba(52, 35, 22, 0.97), rgba(34, 23, 15, 0.98));
+  box-shadow: var(--shadow);
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.wa-message-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.wa-message-head h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 1.15rem;
+}
+
+.wa-message-field {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+#whatsappMessageText {
+  width: 100%;
+  resize: vertical;
+  min-height: 210px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 247, 233, 0.08);
+  color: var(--text);
+  padding: 12px;
+  font: inherit;
+  line-height: 1.5;
+}
+
+#whatsappMessageText:focus {
+  outline: 2px solid rgba(243, 195, 123, 0.5);
+  outline-offset: 1px;
+}
+
+.wa-message-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 body[data-admin-view="dashboard"] .admin-mobile-tab[href="admin-portal.html"],
 body[data-admin-view="inscriptions"] .admin-mobile-tab[href="admin-inscriptions.html"] {
   background: linear-gradient(120deg, var(--accent), var(--accent-strong));
@@ -931,7 +1004,8 @@ body[data-admin-view="inscriptions"] .admin-mobile-tab[href="admin-inscriptions.
 
   .panel-actions,
   .panel-actions-wrap,
-  .inscriptions-toolbar {
+  .inscriptions-toolbar,
+  .wa-message-actions {
     width: 100%;
   }
 
@@ -1145,6 +1219,18 @@ body[data-admin-view="inscriptions"] .admin-mobile-tab[href="admin-inscriptions.
 
   .inscriptions-toolbar input,
   .inscriptions-toolbar .admin-btn {
+    min-height: 42px;
+  }
+
+  .wa-message-card {
+    border-radius: 14px;
+    padding: 12px;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+  }
+
+  .wa-message-actions .admin-btn {
+    width: 100%;
     min-height: 42px;
   }
 
