@@ -328,6 +328,48 @@
     return sameEmail || samePhone;
   }
 
+  function isDuplicateInsertError(error) {
+    const code = String(error?.code || "");
+    const message = String(error?.message || "").toLowerCase();
+    return code === "23505" || message.includes("duplicate key") || message.includes("unique constraint");
+  }
+
+  async function findExistingReservationRemote(client, table, data) {
+    if (data.email) {
+      const { data: emailRows, error: emailError } = await client
+        .from(table)
+        .select("*")
+        .ilike("email", data.email)
+        .limit(1);
+
+      if (emailError) {
+        throw emailError;
+      }
+
+      if (Array.isArray(emailRows) && emailRows.length) {
+        return emailRows[0];
+      }
+    }
+
+    if (data.phone) {
+      const { data: phoneRows, error: phoneError } = await client
+        .from(table)
+        .select("*")
+        .eq("phone", data.phone)
+        .limit(1);
+
+      if (phoneError) {
+        throw phoneError;
+      }
+
+      if (Array.isArray(phoneRows) && phoneRows.length) {
+        return phoneRows[0];
+      }
+    }
+
+    return null;
+  }
+
   async function insertReservationFromAdmin(data) {
     const client = createSupabaseClient();
     const table = config.reservationsTable || "reservations";
@@ -342,29 +384,13 @@
       address: data.address,
       reserved_at: data.reservedAt,
       event_name: data.eventName,
-      language: data.language,
-      presence_status: "unknown"
+      language: data.language
     };
 
     if (client) {
-      const lookupFilters = [];
-      if (data.email) lookupFilters.push(`email.eq.${data.email}`);
-      if (data.phone) lookupFilters.push(`phone.eq.${data.phone}`);
-
-      if (lookupFilters.length) {
-        const { data: existingRows, error: lookupError } = await client
-          .from(table)
-          .select("*")
-          .or(lookupFilters.join(","))
-          .limit(1);
-
-        if (lookupError) {
-          throw lookupError;
-        }
-
-        if (Array.isArray(existingRows) && existingRows.length) {
-          return { status: "existing", mode: "supabase", data: existingRows[0] };
-        }
+      const existingRow = await findExistingReservationRemote(client, table, data);
+      if (existingRow) {
+        return { status: "existing", mode: "supabase", data: existingRow };
       }
 
       const { data: insertedRows, error: insertError } = await client
@@ -374,6 +400,13 @@
         .limit(1);
 
       if (insertError) {
+        if (isDuplicateInsertError(insertError)) {
+          const duplicatedRow = await findExistingReservationRemote(client, table, data);
+          if (duplicatedRow) {
+            return { status: "existing", mode: "supabase", data: duplicatedRow };
+          }
+          return { status: "existing", mode: "supabase", data: payload };
+        }
         throw insertError;
       }
 
@@ -450,7 +483,7 @@
       await loadData();
     } catch (error) {
       setAddUserFeedback("Ajout impossible pour le moment.", "error");
-      showToast("Ajout impossible. Verifiez la policy INSERT Supabase.", "error");
+      showToast("Ajout impossible. Verifiez la connexion ou les permissions Supabase.", "error");
       console.error(error);
     } finally {
       if (submitButton) submitButton.disabled = false;
