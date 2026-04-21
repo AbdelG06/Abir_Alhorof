@@ -488,13 +488,20 @@ async function generateReservationPdf(data) {
           address: { x: 55.2, y: 250.3, maxWidth: 78, font: "normal", size: 7.4, uppercase: false }
         };
 
+        const TEMPLATE_BASE_HEIGHT = 3508;
+
         const mmToPxX = (mm) => (mm / 210) * canvas.width;
         const mmToPxY = (mm) => (mm / 297) * canvas.height;
+        const scaledFontSize = (size) => {
+          const scale = canvas.height / TEMPLATE_BASE_HEIGHT;
+          const boostedSize = size * scale * 2.4;
+          return Math.min(42, Math.max(12, boostedSize));
+        };
 
         const drawField = (key, value) => {
           const layout = fieldLayout[key];
           const hasArabic = containsArabic(value);
-          const sizePx = Math.max(10, (layout.size / 297) * canvas.height);
+          const sizePx = scaledFontSize(layout.size);
           const weight = layout.font === "bold" ? "700" : "400";
           const family = hasArabic ? '"Amiri", "Noto Naskh Arabic", Tahoma, serif' : '"Arial", sans-serif';
           ctx.font = `${weight} ${sizePx}px ${family}`;

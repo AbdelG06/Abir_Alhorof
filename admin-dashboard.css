@@ -448,6 +448,79 @@ p {
   min-width: 180px;
 }
 
+.add-user-panel {
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: linear-gradient(140deg, rgba(51, 35, 23, 0.95), rgba(33, 22, 14, 0.95));
+  padding: 12px;
+}
+
+.add-user-panel h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-family: "Playfair Display", serif;
+}
+
+.add-user-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.add-user-field {
+  display: grid;
+  gap: 6px;
+}
+
+.add-user-field span {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.add-user-field input,
+.add-user-field select {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255, 247, 233, 0.08);
+  color: var(--text);
+  padding: 10px 11px;
+  font: inherit;
+}
+
+.add-user-field input:focus,
+.add-user-field select:focus {
+  outline: 2px solid rgba(243, 195, 123, 0.5);
+  outline-offset: 1px;
+}
+
+.add-user-field-full,
+.add-user-actions,
+.add-user-feedback {
+  grid-column: 1 / -1;
+}
+
+.add-user-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.add-user-feedback {
+  min-height: 1.2rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.add-user-feedback[data-state="success"] {
+  color: var(--success);
+}
+
+.add-user-feedback[data-state="error"] {
+  color: var(--danger);
+}
+
 .inscriptions-table-wrap {
   overflow: auto;
   border: 1px solid var(--border);
@@ -1072,6 +1145,19 @@ body[data-admin-view="inscriptions"] .admin-mobile-tab[href="admin-inscriptions.
 
   .inscriptions-toolbar input,
   .inscriptions-toolbar .admin-btn {
+    min-height: 42px;
+  }
+
+  .add-user-form {
+    grid-template-columns: 1fr;
+  }
+
+  .add-user-actions {
+    width: 100%;
+  }
+
+  .add-user-actions .admin-btn {
+    width: 100%;
     min-height: 42px;
   }
 

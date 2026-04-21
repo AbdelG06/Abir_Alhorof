@@ -97,8 +97,59 @@
 
         <div class="inscriptions-toolbar">
           <input type="search" id="reservationSearch" placeholder="Rechercher nom, prenom, email, telephone...">
+          <button id="toggleAddUserForm" class="admin-btn admin-btn-secondary" type="button">Ajouter user</button>
           <button id="resetFilters" class="admin-btn admin-btn-secondary" type="button">Reset</button>
         </div>
+
+        <section class="add-user-panel hidden" id="addUserPanel" aria-label="Ajout manuel utilisateur">
+          <div class="admin-panel-head">
+            <h3>Ajouter un participant</h3>
+            <p class="panel-text">Remplissez les memes informations que le formulaire de reservation.</p>
+          </div>
+
+          <form id="addUserForm" class="add-user-form" novalidate>
+            <label class="add-user-field">
+              <span>Nom</span>
+              <input type="text" name="nom" required autocomplete="family-name" placeholder="Nom">
+            </label>
+
+            <label class="add-user-field">
+              <span>Prenom</span>
+              <input type="text" name="prenom" required autocomplete="given-name" placeholder="Prenom">
+            </label>
+
+            <label class="add-user-field">
+              <span>Sexe</span>
+              <select name="sexe" required>
+                <option value="">Selectionner</option>
+                <option value="male">Homme</option>
+                <option value="female">Femme</option>
+              </select>
+            </label>
+
+            <label class="add-user-field">
+              <span>Telephone</span>
+              <input type="tel" name="phone" required autocomplete="tel" placeholder="Numero de telephone">
+            </label>
+
+            <label class="add-user-field">
+              <span>Email</span>
+              <input type="email" name="email" required autocomplete="email" placeholder="nom@email.com">
+            </label>
+
+            <label class="add-user-field add-user-field-full">
+              <span>Adresse</span>
+              <input type="text" name="address" autocomplete="street-address" placeholder="Adresse (optionnel)">
+            </label>
+
+            <div class="add-user-actions">
+              <button type="submit" class="admin-btn admin-btn-primary">Ajouter user</button>
+              <button type="button" id="cancelAddUser" class="admin-btn admin-btn-ghost">Annuler</button>
+            </div>
+
+            <p class="add-user-feedback" id="addUserFeedback" aria-live="polite"></p>
+          </form>
+        </section>
 
         <div class="inscriptions-table-wrap">
           <table class="inscriptions-table">
@@ -111,6 +162,7 @@
                 <th>Email</th>
                 <th>Adresse</th>
                 <th>Date inscription</th>
+                <th>Presence</th>
                 <th>WhatsApp</th>
                 <th>PDF</th>
                 <th>Suppression</th>

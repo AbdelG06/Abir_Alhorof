@@ -38,6 +38,11 @@
     searchInput: document.getElementById("reservationSearch"),
     filterFrom: document.getElementById("filterFrom"),
     filterTo: document.getElementById("filterTo"),
+    toggleAddUserForm: document.getElementById("toggleAddUserForm"),
+    addUserPanel: document.getElementById("addUserPanel"),
+    addUserForm: document.getElementById("addUserForm"),
+    cancelAddUser: document.getElementById("cancelAddUser"),
+    addUserFeedback: document.getElementById("addUserFeedback"),
     resetFilters: document.getElementById("resetFilters"),
 
     dataSourceBanner: document.getElementById("dataSourceBanner"),
@@ -118,9 +123,14 @@
   }
 
   function setButtonsDisabled(disabled) {
-    [ui.refreshButton, ui.exportButton].forEach((button) => {
+    [ui.refreshButton, ui.exportButton, ui.toggleAddUserForm].forEach((button) => {
       if (button) button.disabled = disabled;
     });
+
+    const submitAddUser = ui.addUserForm?.querySelector('button[type="submit"]');
+    if (submitAddUser) {
+      submitAddUser.disabled = disabled;
+    }
   }
 
   function parseDate(value) {
@@ -232,6 +242,219 @@
     if (digits.startsWith("212")) return digits;
     if (digits.startsWith("0") && digits.length >= 9) return `212${digits.slice(1)}`;
     return digits;
+  }
+
+  function sanitizePhoneInput(raw) {
+    return String(raw || "").replace(/[^\d+]/g, "");
+  }
+
+  function normalizeIdentityPhone(raw) {
+    return String(raw || "").replace(/\D/g, "");
+  }
+
+  function normalizeIdentityEmail(raw) {
+    return String(raw || "").trim().toLowerCase();
+  }
+
+  function setAddUserFeedback(message = "", type = "info") {
+    if (!ui.addUserFeedback) return;
+    ui.addUserFeedback.dataset.state = type;
+    ui.addUserFeedback.textContent = message;
+  }
+
+  function closeAddUserPanel({ reset = false } = {}) {
+    if (!ui.addUserPanel) return;
+    ui.addUserPanel.classList.add("hidden");
+    if (ui.toggleAddUserForm) {
+      ui.toggleAddUserForm.textContent = "Ajouter user";
+    }
+    if (reset) {
+      ui.addUserForm?.reset();
+      setAddUserFeedback("", "info");
+    }
+  }
+
+  function openAddUserPanel() {
+    if (!ui.addUserPanel) return;
+    ui.addUserPanel.classList.remove("hidden");
+    if (ui.toggleAddUserForm) {
+      ui.toggleAddUserForm.textContent = "Fermer ajout";
+    }
+  }
+
+  function toggleAddUserPanel() {
+    if (!ui.addUserPanel) return;
+    if (ui.addUserPanel.classList.contains("hidden")) {
+      openAddUserPanel();
+      return;
+    }
+    closeAddUserPanel({ reset: false });
+  }
+
+  function adminGenderLabel(value) {
+    return String(value || "").toLowerCase() === "female" ? "Femme" : "Homme";
+  }
+
+  function readAddUserFormData() {
+    if (!ui.addUserForm) return null;
+
+    const formData = new FormData(ui.addUserForm);
+    const phoneRaw = String(formData.get("phone") || "").trim();
+    const sanitizedPhone = sanitizePhoneInput(phoneRaw);
+    const sexe = String(formData.get("sexe") || "").trim().toLowerCase();
+
+    return {
+      nom: String(formData.get("nom") || "").trim(),
+      prenom: String(formData.get("prenom") || "").trim(),
+      sexe,
+      sexeLabel: adminGenderLabel(sexe),
+      email: normalizeIdentityEmail(formData.get("email")),
+      phone: sanitizedPhone,
+      address: String(formData.get("address") || "").trim(),
+      reservedAt: new Date().toLocaleString("fr-FR"),
+      eventName: "Journee Therapie et Lecture - Se reconnecter a soi au coeur de la nature",
+      language: "fr"
+    };
+  }
+
+  function isDuplicateReservation(candidate, row) {
+    const candidateEmail = normalizeIdentityEmail(candidate.email);
+    const candidatePhone = normalizeIdentityPhone(candidate.phone);
+    const rowEmail = normalizeIdentityEmail(row.email);
+    const rowPhone = normalizeIdentityPhone(row.phone);
+
+    const sameEmail = candidateEmail && rowEmail && candidateEmail === rowEmail;
+    const samePhone = candidatePhone && rowPhone && candidatePhone === rowPhone;
+    return sameEmail || samePhone;
+  }
+
+  async function insertReservationFromAdmin(data) {
+    const client = createSupabaseClient();
+    const table = config.reservationsTable || "reservations";
+
+    const payload = {
+      nom: data.nom,
+      prenom: data.prenom,
+      sexe: data.sexe,
+      sexe_label: data.sexeLabel,
+      email: data.email,
+      phone: data.phone,
+      address: data.address,
+      reserved_at: data.reservedAt,
+      event_name: data.eventName,
+      language: data.language,
+      presence_status: "unknown"
+    };
+
+    if (client) {
+      const lookupFilters = [];
+      if (data.email) lookupFilters.push(`email.eq.${data.email}`);
+      if (data.phone) lookupFilters.push(`phone.eq.${data.phone}`);
+
+      if (lookupFilters.length) {
+        const { data: existingRows, error: lookupError } = await client
+          .from(table)
+          .select("*")
+          .or(lookupFilters.join(","))
+          .limit(1);
+
+        if (lookupError) {
+          throw lookupError;
+        }
+
+        if (Array.isArray(existingRows) && existingRows.length) {
+          return { status: "existing", mode: "supabase", data: existingRows[0] };
+        }
+      }
+
+      const { data: insertedRows, error: insertError } = await client
+        .from(table)
+        .insert(payload)
+        .select("*")
+        .limit(1);
+
+      if (insertError) {
+        throw insertError;
+      }
+
+      return {
+        status: "created",
+        mode: "supabase",
+        data: insertedRows?.[0] || payload
+      };
+    }
+
+    const localReservations = readLocalArray(RESERVATION_LOCAL_KEY);
+    const existingLocal = localReservations.find((row) => isDuplicateReservation(data, row));
+    if (existingLocal) {
+      return { status: "existing", mode: "local", data: existingLocal };
+    }
+
+    const localEntry = {
+      nom: data.nom,
+      prenom: data.prenom,
+      sexe: data.sexe,
+      sexeLabel: data.sexeLabel,
+      email: data.email,
+      phone: data.phone,
+      address: data.address,
+      reservedAt: data.reservedAt,
+      eventName: data.eventName,
+      language: data.language,
+      presence_status: "unknown"
+    };
+
+    localReservations.unshift(localEntry);
+    localStorage.setItem(RESERVATION_LOCAL_KEY, JSON.stringify(localReservations));
+
+    return {
+      status: "created",
+      mode: "local",
+      data: localEntry
+    };
+  }
+
+  async function handleAddUserSubmit(event) {
+    event.preventDefault();
+    if (!ui.addUserForm) return;
+
+    if (!ui.addUserForm.checkValidity()) {
+      ui.addUserForm.reportValidity();
+      setAddUserFeedback("Merci de remplir tous les champs obligatoires.", "error");
+      return;
+    }
+
+    const data = readAddUserFormData();
+    if (!data || !data.nom || !data.prenom || !data.sexe || !data.email || !data.phone) {
+      setAddUserFeedback("Merci de remplir tous les champs obligatoires.", "error");
+      return;
+    }
+
+    setAddUserFeedback("Ajout en cours...", "info");
+
+    const submitButton = ui.addUserForm.querySelector('button[type="submit"]');
+    if (submitButton) submitButton.disabled = true;
+
+    try {
+      const result = await insertReservationFromAdmin(data);
+
+      if (result.status === "existing") {
+        setAddUserFeedback("Cet utilisateur est deja inscrit (email ou telephone existant).", "error");
+        showToast("Utilisateur deja inscrit.", "error");
+        return;
+      }
+
+      setAddUserFeedback("Utilisateur ajoute avec succes.", "success");
+      showToast("Nouvel utilisateur ajoute.", "success");
+      closeAddUserPanel({ reset: true });
+      await loadData();
+    } catch (error) {
+      setAddUserFeedback("Ajout impossible pour le moment.", "error");
+      showToast("Ajout impossible. Verifiez la policy INSERT Supabase.", "error");
+      console.error(error);
+    } finally {
+      if (submitButton) submitButton.disabled = false;
+    }
   }
 
   function reservationDate(item) {
@@ -963,13 +1186,20 @@
             address: { x: 55.2, y: 250.3, maxWidth: 78, font: "normal", size: 7.4 }
           };
 
+          const TEMPLATE_BASE_HEIGHT = 3508;
+
           const mmToPxX = (mm) => (mm / 210) * canvas.width;
           const mmToPxY = (mm) => (mm / 297) * canvas.height;
+          const scaledFontSize = (size) => {
+            const scale = canvas.height / TEMPLATE_BASE_HEIGHT;
+            const boostedSize = size * scale * 2.4;
+            return Math.min(42, Math.max(12, boostedSize));
+          };
 
           const drawField = (key, value) => {
             const layout = fieldLayout[key];
             const hasArabic = containsArabic(value);
-            const sizePx = Math.max(10, (layout.size / 297) * canvas.height);
+            const sizePx = scaledFontSize(layout.size);
             const weight = layout.font === "bold" ? "700" : "400";
             const family = hasArabic ? '"Amiri", "Noto Naskh Arabic", Tahoma, serif' : '"Arial", sans-serif';
             ctx.font = `${weight} ${sizePx}px ${family}`;
@@ -1356,6 +1586,18 @@
       applyFilters();
       renderRows();
       computeStats();
+    });
+
+    ui.toggleAddUserForm?.addEventListener("click", () => {
+      toggleAddUserPanel();
+    });
+
+    ui.cancelAddUser?.addEventListener("click", () => {
+      closeAddUserPanel({ reset: true });
+    });
+
+    ui.addUserForm?.addEventListener("submit", (event) => {
+      handleAddUserSubmit(event);
     });
 
     ui.calendarMonthPicker?.addEventListener("change", () => {

@@ -16,6 +16,29 @@
   color: var(--gold-strong);
 }
 
+.soiree-highlight.sold-out-notice {
+  border-color: rgba(241, 154, 136, 0.42);
+  background: rgba(241, 154, 136, 0.14);
+  color: #ffd3cb;
+}
+
+.soiree-social-note {
+  margin: 0;
+  color: var(--muted);
+}
+
+.soiree-social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.status-pill.sold-out {
+  border-color: rgba(241, 154, 136, 0.5);
+  background: rgba(241, 154, 136, 0.14);
+  color: #ffd3cb;
+}
+
 .soiree-poster-card,
 .reservation-poster-panel {
   display: grid;
