@@ -100,6 +100,7 @@
           <button id="toggleAddUserForm" class="admin-btn admin-btn-secondary" type="button">Ajouter user</button>
           <button id="resetFilters" class="admin-btn admin-btn-secondary" type="button">Reset</button>
           <button id="sendInscriptionTemplateWhatsapp" class="admin-btn admin-btn-secondary" type="button">Template WhatsApp</button>
+          <button id="createGroupWhatsapp" class="admin-btn admin-btn-secondary" type="button">Creer groupe WhatsApp</button>
         </div>
 
         <section class="add-user-panel hidden" id="addUserPanel" aria-label="Ajout manuel utilisateur">
@@ -191,6 +192,24 @@
       <div class="wa-message-actions">
         <button type="button" class="admin-btn admin-btn-primary" id="sendWhatsAppMessage">Envoyer via WhatsApp</button>
         <button type="button" class="admin-btn admin-btn-secondary" id="cancelWhatsAppMessage">Annuler</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="wa-message-modal hidden" id="whatsappGroupModal" aria-hidden="true" aria-label="Creer groupe WhatsApp">
+    <div class="wa-message-card" role="dialog" aria-modal="true" aria-labelledby="waGroupTitle">
+      <div class="wa-message-head">
+        <h2 id="waGroupTitle">Creer groupe WhatsApp</h2>
+        <button type="button" class="admin-btn admin-btn-ghost" id="closeGroupModal">Fermer</button>
+      </div>
+      <p class="panel-text">Voici tous les numeros des participants. Copiez-les et creez manuellement le groupe sur WhatsApp.</p>
+      <p class="panel-text" id="groupParticipantCount" aria-live="polite"></p>
+      <label class="wa-message-field" for="groupPhoneNumbers">Numeros de telephone</label>
+      <textarea id="groupPhoneNumbers" rows="10" spellcheck="false" readonly></textarea>
+      <div class="wa-message-actions">
+        <button type="button" class="admin-btn admin-btn-primary" id="copyGroupNumbers">Copier les numeros</button>
+        <button type="button" class="admin-btn admin-btn-secondary" id="openWhatsappApp">Ouvrir WhatsApp</button>
+        <button type="button" class="admin-btn admin-btn-ghost" id="cancelGroupModal">Annuler</button>
       </div>
     </div>
   </section>

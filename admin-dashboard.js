@@ -84,6 +84,15 @@
     closeWhatsAppMessage: document.getElementById("closeWhatsAppMessage"),
     cancelWhatsAppMessage: document.getElementById("cancelWhatsAppMessage"),
 
+    createGroupWhatsapp: document.getElementById("createGroupWhatsapp"),
+    whatsappGroupModal: document.getElementById("whatsappGroupModal"),
+    groupPhoneNumbers: document.getElementById("groupPhoneNumbers"),
+    groupParticipantCount: document.getElementById("groupParticipantCount"),
+    copyGroupNumbers: document.getElementById("copyGroupNumbers"),
+    openWhatsappApp: document.getElementById("openWhatsappApp"),
+    closeGroupModal: document.getElementById("closeGroupModal"),
+    cancelGroupModal: document.getElementById("cancelGroupModal"),
+
     reservationRows: document.getElementById("reservationRows"),
     toast: document.getElementById("adminToast")
   };
@@ -132,7 +141,7 @@
   }
 
   function setButtonsDisabled(disabled) {
-    [ui.refreshButton, ui.exportButton, ui.toggleAddUserForm, ui.sendInscriptionTemplateWhatsapp].forEach((button) => {
+    [ui.refreshButton, ui.exportButton, ui.toggleAddUserForm, ui.sendInscriptionTemplateWhatsapp, ui.createGroupWhatsapp].forEach((button) => {
       if (button) button.disabled = disabled;
     });
 
@@ -1461,6 +1470,72 @@
     showToast("Message de validation pret a envoyer.", "success");
   }
 
+  function getPhoneNumbersForGroupWhatsapp() {
+    const reservations = state.filteredReservations.length > 0 ? state.filteredReservations : state.reservations;
+    const validPhones = [];
+    
+    reservations.forEach((item) => {
+      const normalizedPhone = normalizePhone(item.phone || "");
+      if (normalizedPhone) {
+        validPhones.push(normalizedPhone);
+      }
+    });
+    
+    return validPhones;
+  }
+
+  function closeGroupModal() {
+    if (!ui.whatsappGroupModal) return;
+    ui.whatsappGroupModal.classList.add("hidden");
+    ui.whatsappGroupModal.setAttribute("aria-hidden", "true");
+  }
+
+  function openGroupModal() {
+    const phones = getPhoneNumbersForGroupWhatsapp();
+    
+    if (phones.length === 0) {
+      showToast("Aucun numero de telephone disponible.", "error");
+      return;
+    }
+
+    if (!ui.whatsappGroupModal) return;
+    
+    const phoneText = phones.join("\n");
+    const countMsg = `Total: ${phones.length} participant${phones.length > 1 ? 's' : ''}`;
+    
+    if (ui.groupPhoneNumbers) {
+      ui.groupPhoneNumbers.value = phoneText;
+    }
+    
+    if (ui.groupParticipantCount) {
+      ui.groupParticipantCount.textContent = countMsg;
+    }
+    
+    ui.whatsappGroupModal.classList.remove("hidden");
+    ui.whatsappGroupModal.setAttribute("aria-hidden", "false");
+  }
+
+  function copyGroupNumbers() {
+    if (!ui.groupPhoneNumbers) return;
+    
+    const text = ui.groupPhoneNumbers.value;
+    if (!text) {
+      showToast("Pas de numeros a copier.", "error");
+      return;
+    }
+    
+    navigator.clipboard.writeText(text).then(() => {
+      showToast("Numeros copies dans le presse-papiers!", "success");
+    }).catch(() => {
+      showToast("Erreur lors de la copie.", "error");
+    });
+  }
+
+  function openWhatsappApp() {
+    window.open("https://wa.me/", "_blank", "noopener");
+    showToast("WhatsApp en cours d'ouverture...", "info");
+  }
+
   async function updatePresenceRemote(row, status) {
     const client = createSupabaseClient();
     const table = config.reservationsTable || "reservations";
@@ -1775,6 +1850,32 @@
       openInscriptionRequestTemplateWhatsapp();
     });
 
+    ui.createGroupWhatsapp?.addEventListener("click", () => {
+      openGroupModal();
+    });
+
+    ui.copyGroupNumbers?.addEventListener("click", () => {
+      copyGroupNumbers();
+    });
+
+    ui.openWhatsappApp?.addEventListener("click", () => {
+      openWhatsappApp();
+    });
+
+    ui.closeGroupModal?.addEventListener("click", () => {
+      closeGroupModal();
+    });
+
+    ui.cancelGroupModal?.addEventListener("click", () => {
+      closeGroupModal();
+    });
+
+    ui.whatsappGroupModal?.addEventListener("click", (event) => {
+      if (event.target === ui.whatsappGroupModal) {
+        closeGroupModal();
+      }
+    });
+
     ui.cancelAddUser?.addEventListener("click", () => {
       closeAddUserPanel({ reset: true });
     });
@@ -1845,6 +1946,7 @@
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
         closeInscriptionMessageModal();
+        closeGroupModal();
       }
     });
 
